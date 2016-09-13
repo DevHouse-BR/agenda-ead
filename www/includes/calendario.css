@@ -1,0 +1,100 @@
+select {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+}
+.nomecampo {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #003399;
+}
+.calendario {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	text-align: center;
+	background-color: #33CCCC;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #FFFFFF;
+}
+.tabelacalendario {
+	border-top: thin solid #0099FF;
+	border-right: thin solid #0000FF;
+	border-bottom: thin solid #0000FF;
+	border-left: thin solid #0099FF;
+}
+.mes {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	text-align: center;
+	cursor: hand;
+	background-color: #FFCC00;
+	font-weight: bold;
+	color: #FFFFCC;
+}
+.interior {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
+	font-size: 10px;
+	text-align: center;
+	background-color: #B7E4FB;
+	border-top: 1px none #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	border-left: 1px none #FFFFFF;
+}
+.titulo {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #FFFFFF;
+	font-size: 12px;
+	text-align: center;
+	background-color: #0066FF;
+	font-weight: bold;
+}
+.outromes {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #999999;
+	font-size: 10px;
+	text-align: center;
+	background-color: #B7E4FB;
+	border-top: 1px none #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	border-left: 1px none #FFFFFF;
+}
+.diaocorrencia {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #FF6600;
+	font-size: 11px;
+	font-weight: bold;
+	cursor: hand;
+}
+.hoje {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	text-align: center;
+	background-color: #0033FF;
+	border-top: 1px none #FFFFFF;
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	border-left: 1px none #FFFFFF;
+	color: #FFFFFF;
+}
+.setas{
+	cursor: hand;
+	border-top: solid 1px white;
+	border-right: solid 1px white;
+}
+.celula{
+	border-right: 1px solid #FFFFFF;
+	border-bottom: 1px solid #FFFFFF;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000000;
+	font-size: 10px;
+	text-align: center;
+	cursor: hand;
+}
+.linha {
+	background-color: #B7E4FB;
+	cursor: hand;
+}

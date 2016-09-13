@@ -1,0 +1,1 @@
+@c:\php\php.exe C:\Inetpub\wwwroot\agenda\motor.php
