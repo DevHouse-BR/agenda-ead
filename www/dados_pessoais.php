@@ -9,24 +9,23 @@ $TITULO_PG = "DADOS PESSOAIS";
 $PERMISSAO_DE_ACESSO = "professor/aluno";
 require("includes/permissoes.php");
 
-if($_POST["modo"] == "update"){
+if($HTTP_POST_VARS["modo"] == "update"){
 	require("includes/conectar_mysql.php");
 		$query = "UPDATE usuarios SET ";
-		$query .= "nome='" . $_POST["nome"] . "', ";
-		$query .= "endereco='" . $_POST["endereco"] . "', ";
-		$query .= "tel_res='" . $_POST["tel_res"] . "', ";
-		$query .= "tel_com='" . $_POST["tel_com"] . "', ";
-		$query .= "celular='" . $_POST["celular"] . "', ";
-		$query .= "email='" . $_POST["email"] . "', ";
-		$query .= "profissao='" . $_POST["profissao"] . "' ";
-		$query .= "WHERE cd=" . $_COOKIE["cd_usuario_agenda"];
+		$query .= "nome='" . $HTTP_POST_VARS["nome"] . "', ";
+		$query .= "endereco='" . $HTTP_POST_VARS["endereco"] . "', ";
+		$query .= "tel_res='" . $HTTP_POST_VARS["tel_res"] . "', ";
+		$query .= "tel_com='" . $HTTP_POST_VARS["tel_com"] . "', ";
+		$query .= "celular='" . $HTTP_POST_VARS["celular"] . "', ";
+		$query .= "profissao='" . $HTTP_POST_VARS["profissao"] . "' ";
+		$query .= "WHERE cd=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
 		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 		if($result) $ok = true;
 	require("includes/desconectar_mysql.php");
 }
 
 require("includes/conectar_mysql.php");
-	$query = "SELECT * FROM usuarios WHERE cd=" . $_COOKIE["cd_usuario_agenda"];
+	$query = "SELECT * FROM usuarios WHERE cd=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
 	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 	$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
 require("includes/desconectar_mysql.php");
@@ -34,7 +33,7 @@ require("includes/desconectar_mysql.php");
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			input {
@@ -95,7 +94,7 @@ require("includes/desconectar_mysql.php");
 										<td>
 										<table width="100%" border="0" cellspacing="0" cellpadding="1" class="tabela">
 										  <tr align="center" bgcolor="#00CCFF"> 
-											<td><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><strong>Dados do Aluno</strong></font> </td>
+											<td><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><strong>Dados Pessoais</strong></font> </td>
 										  </tr>
 										  <tr>
 											<td align="center">
@@ -112,7 +111,7 @@ require("includes/desconectar_mysql.php");
 												  </tr>
 												  <tr> 
 													
-												  <td align="right" class="nomecampo">Tel. Residêncial: </td>
+												  <td align="right" class="nomecampo">Tel. Residencial: </td>
 													<td><input type="text" name="tel_res" class="campotxt" value="<?=$usuario["tel_res"]?>"></td>
 												  </tr>
 												  <tr> 
@@ -124,11 +123,6 @@ require("includes/desconectar_mysql.php");
 													
 												  <td align="right" class="nomecampo">Celular: </td>
 													<td><input type="text" name="celular" class="campotxt" value="<?=$usuario["celular"]?>"></td>
-												  </tr>
-												  <tr> 
-													
-												  <td align="right" class="nomecampo">Email: </td>
-													<td><input type="text" name="email" class="campotxt" value="<?=$usuario["email"]?>"></td>
 												  </tr>
 												  <tr> 
 												  <td align="right" class="nomecampo">Profissão: </td>

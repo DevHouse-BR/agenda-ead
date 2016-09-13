@@ -1,7 +1,7 @@
 <?php
-//Este é um script importante pois verifica se usuario tem permissão para acessar a pagina que contem este script.
+//Este script verifica se usuario tem permissão para acessar a pagina que contem este script.
 
-$TIPO = $_COOKIE["tipo_usuario_agenda"]; //Guarda na variável tipo, se o usuário é aluno ou professor.
+$TIPO = $HTTP_COOKIE_VARS["tipo_usuario_agenda"]; //Guarda na variável tipo, se o usuário é aluno ou professor.
 
 if (empty($TIPO)){ //Caso não exista o cookie tipo então o browser é redirecionado para a tela de login.
 	header("Location: index.php"); 
@@ -14,4 +14,5 @@ foreach ($sao_permitidos as $valor){
 	if(substr_count($TIPO, $valor) != 0) $i++; //Verifica se o tipo do usuario é também um tipo permitido nesta página.
 }
 if($i == 0) die("Você não tem permissão de acesso a este documento."); //Caso não seja então e mostrada uma mensagem de erro.
+
 ?>

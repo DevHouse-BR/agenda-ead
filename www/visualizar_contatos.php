@@ -9,7 +9,7 @@ $TITULO_PG = "LISTA DE CONTATOS";
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -44,7 +44,7 @@ $TITULO_PG = "LISTA DE CONTATOS";
               </tr>
               <tr>
                 <td>&nbsp;</td>
-                <td><iframe width="100%" id="viz" frameborder="0" height="260" src="tabela_contatos.php"></iframe></td>
+                <td><iframe width="100%" id="viz" frameborder="0" height="306" src="tabela_contatos.php"></iframe></td>
                 <td>&nbsp;</td>
               </tr>
               <tr>

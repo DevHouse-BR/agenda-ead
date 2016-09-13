@@ -7,23 +7,25 @@
 $PERMISSAO_DE_ACESSO = "professor";
 require("includes/permissoes.php");
 
-$modo = $_GET["modo"];
-$executar = $_POST["executar"];
-$cd = $_REQUEST["cd"];
+$modo =  $HTTP_GET_VARS["modo"];
+$executar = $HTTP_POST_VARS["executar"];
+if($HTTP_GET_VARS["cd"] == "")	$cd = $HTTP_POST_VARS["cd"];
+else $cd = $HTTP_GET_VARS["cd"];
+
 $ok = false;
 
 if($modo == "salva"){
-	$nome = $_POST["nome"];
-	$endereco = $_POST["endereco"];
-	$tel_res = $_POST["tel_res"];
-	$tel_com = $_POST["tel_com"];
-	$celular = $_POST["celular"];
-	$email = $_POST["email"];
-	$profissao = $_POST["profissao"];
-	$curso = $_POST["curso"];
-	$turma = $_POST["turma"];
-	$professor = $_POST["professor"];
-	$senha = str_replace("=", "", base64_encode(rand(10000000, 99999999))); //A senha provisória é gerada a partir de um numero aleatório de 8 digitos(rand()) que depois é transformado em texto (base64_encode()). O str_replace() tira o sinal de "=" gerado pela base64.
+	$nome = $HTTP_POST_VARS["nome"];
+	$endereco = $HTTP_POST_VARS["endereco"];
+	$tel_res = $HTTP_POST_VARS["tel_res"];
+	$tel_com = $HTTP_POST_VARS["tel_com"];
+	$celular = $HTTP_POST_VARS["celular"];
+	$email = $HTTP_POST_VARS["email"];
+	$profissao = $HTTP_POST_VARS["profissao"];
+	$curso = $HTTP_POST_VARS["curso"];
+	$turma = $HTTP_POST_VARS["turma"];
+	$professor = $HTTP_POST_VARS["professor"];
+	$senha = str_replace("=", "", base64_encode(rand(10000000, 99999999))); //A senha provisória é gerada a partir de um numero aleatório de 8 digitos(rand()) que depois é transformado em texto (base64_encode()). O str_replace() tira o sinal de "=" gerado pela função base64.
 	$tipo = "aluno";
 	$alterar_senha = "s";
 	
@@ -55,7 +57,7 @@ if($modo == "salva"){
 		$query .= "turma='" . $turma ."', ";
 		$query .= "curso='" . $curso ."', ";
 		$query .= "professor='" . $professor ."'";
-		$query .= " WHERE cd='" . $_POST["cd"] . "'";
+		$query .= " WHERE cd='" . $HTTP_POST_VARS["cd"] . "'";
 		$modo = "update";
 	}
 	require("includes/conectar_mysql.php");
@@ -63,7 +65,7 @@ if($modo == "salva"){
 		if($result) $ok = true;
 	require("includes/desconectar_mysql.php");
 	//Caso seja um novo aluno será enviado um email para este aluno usando a função mail().
-	if ($executar == "add") mail($email, "Informações Cadastrais Agenda Eletrônica de Ensino", "Olá, " . $nome . "\n\nVocê foi cadastrado(a) na Agenda Eletrônica!\nPara acessá-la aponte seu navegador para:\n\nwww.agendaeletronica.com.br\n\nUsuário: " . $email . "\nSenha: " . $senha, "From: Agenda Eletrônica <agenda@agendaeletronica.com.br>");
+	if ($executar == "add") mail($email, "Informações Cadastrais Agenda Virtual de Curso a Distância", "Olá, " . $nome . "\n\nVocê foi cadastrado(a) na Agenda Virtual!\nPara acessá-la aponte seu navegador para:\n\nwww.inf.univali.br/~cristiane\n\nUsuário: " . $email . "\nSenha: " . $senha, "From: Agenda CAD <crisj@terra.com.br>");
 }
 
 
@@ -78,6 +80,8 @@ if($modo == "update"){ //Mosta as informações do aluno para serem editadas
 if($modo == "apagar"){ //Apaga o aluno
 	require("includes/conectar_mysql.php");
 		$query = "DELETE FROM usuarios where cd=" . $cd;
+		$result_apagar = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+		$query = "DELETE FROM grupos_integrantes where cd_integrante=" . $cd;
 		$result_apagar = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 	require("includes/desconectar_mysql.php");
 }
@@ -122,7 +126,7 @@ body {
 			f.action = "form_aluno.php?modo=salva";
 			f.submit();
 		}
-		else alert("Apenas o campo \"celular\" não é obrigatório!");
+		else alert("Todos os campos devem ser preenchidos!");
 	}
 </script>
 <?php 
@@ -169,7 +173,7 @@ if($result_apagar){?>
 		  </tr>
 		  <tr> 
 			
-          <td align="right" class="nomecampo">Tel. Residêncial: </td>
+          <td align="right" class="nomecampo">Tel. Residencial: </td>
 			<td><input type="text" name="tel_res" class="campotxt" <?php if($modo == "update") echo("value=\"". $usuario["tel_res"] . "\""); ?>></td>
 		  </tr>
 		  <tr> 
@@ -184,7 +188,7 @@ if($result_apagar){?>
 		  </tr>
 		  <tr> 
 			
-          <td align="right" class="nomecampo">Email: </td>
+          <td align="right" class="nomecampo">E-mail: </td>
 			<td><input type="text" name="email" class="campotxt" <?php if($modo == "update") echo("value=\"". $usuario["email"] . "\""); ?>></td>
 		  </tr>
 		  <tr> 

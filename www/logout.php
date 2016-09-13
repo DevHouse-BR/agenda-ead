@@ -9,6 +9,12 @@ setcookie("tipo_usuario_agenda", "", time() - 3600);
 <html>
 	<head>
 		<title>Logout do Sistema</title>
+		<script language="JavaScript" type="text/javascript">
+			setTimeout("finaliza();",2000);
+			function finaliza(){
+				self.close();
+			}
+		</script>
 	</head>
 	<body>
 		<center><h3>Obrigado e volte sempre!</h3></center>

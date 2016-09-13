@@ -2,16 +2,15 @@
 
 #Este script exerce uma função muito importante dentro do sistema. Ele recebe o nome de usuario e senha digitados no
 #script index.php e busca no banco de dados estas informações. Caso estejam corretas ele grava no browser do usuário
-#cookies contendo informações necessárias para o funcionamento do sistema. O sistema não funcionará caso o browser esteja
-#desabilitado para o uso de cookies.
+#cookies contendo informações necessárias para o funcionamento do sistema.
 
 #Outra função importante deste script é pesquisar no banco de dados a existência de usuários cadastrados.
 #Caso o sistema esteja sendo implementado, o banco de dados vai estar vazio então o sistema permite a entrada de um usuário
 #sem senha e com permissões apenas para cadastrar professores.
 
 
-$login = $_POST["usuario"];	//Recebe as informações digitadas
-$senha = $_POST["senha"];
+$login = $HTTP_POST_VARS["usuario"];	//Recebe as informações digitadas
+$senha = $HTTP_POST_VARS["senha"];
 
 require("includes/conectar_mysql.php");
 	$query = "SELECT COUNT(*) FROM usuarios"; //Faz a contagem para verificar a existencia de usuarios cadastrados.
@@ -46,13 +45,13 @@ function valida(){
 	if(!setcookie("nome_usuario_agenda", $usuario["nome"])) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
 	if(!setcookie("tipo_usuario_agenda", $usuario["tipo"])) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
 	if(!setcookie("email_usuario_agenda", $usuario["email"])) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
-	header("Location: agenda.php"); //Redireciona o browser para a pagina especificada.
+	redirect("agenda.php", $usuario["nome"]);
 }
 function valida_root(){
 	if(!setcookie("cd_usuario_agenda", "0")) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
 	if(!setcookie("nome_usuario_agenda", "root")) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
 	if(!setcookie("tipo_usuario_agenda", "root")) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
-	header("Location: cadastro_professores.php"); 
+	redirect("cadastro_professores.php", "root");
 }
 function novo_usuario(){
 	global $usuario;
@@ -60,7 +59,19 @@ function novo_usuario(){
 	if(!setcookie("nome_usuario_agenda", $usuario["nome"])) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
 	if(!setcookie("tipo_usuario_agenda", $usuario["tipo"])) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
 	if(!setcookie("email_usuario_agenda", $usuario["email"])) die("O seu browser deve aceitar Cookies para o bom funcionamento do software.");
-	header("Location: form_senha1.php");
+	redirect("form_senha1.php", $usuario["nome"]);
 }
-
+function redirect($pagina, $nomeusuario){
+	$html = '<html>
+				<head>
+					<script language="JavaScript">
+						window.open("' . $pagina . '", "Agenda", "width=781,height=415,status=yes,resizable=yes,top=20,left=100,dependent=yes,alwaysRaised=yes");
+					</script>
+				</head>
+				<body>
+					<center><h3>Bem Vindo à Agenda CAD ' . $nomeusuario . '</h3></center>
+				</body>
+			</html>';
+	die($html);
+}
 ?>

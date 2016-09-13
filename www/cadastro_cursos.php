@@ -9,19 +9,19 @@ $TITULO_PG = "GERENCIAMENTO DE CURSOS"; //Título da Página
 $PERMISSAO_DE_ACESSO = "professor";		//Permissões
 require("includes/permissoes.php");
 
-$modo = $_POST["modo"];	//Verifica o modo de execução do script que foi enviado via metodo POST pelo formulario abaixo.
+$modo = $HTTP_POST_VARS["modo"];	//Verifica o modo de execução do script que foi enviado via metodo POST pelo formulario abaixo.
 
 if($modo == "add"){		//Caso o modo seja "add" (adicionar) o código abaixo insere mais um registro no banco de dados com o nome digitado na caixa de texto.
 	require("includes/conectar_mysql.php");
 		$query = "INSERT INTO cursos (curso) VALUES ('";
-		$query .= $_POST["curso"] ."')";
+		$query .= $HTTP_POST_VARS["curso"] ."')";
 		$result = mysql_query($query) or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
 	require("includes/desconectar_mysql.php");
 }
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			input {
@@ -54,7 +54,7 @@ if($modo == "add"){		//Caso o modo seja "add" (adicionar) o código abaixo insere
 															<input type="hidden" name="modo" value="add">
 														  <tr> 
 															<td width="15%" align="left"><font size="2" face="Arial, Helvetica, sans-serif">Curso:</font></td>
-															<td width="60%"><input type="text" name="curso" style="width: 100%"></td>
+															<td width="60%"><input type="text" name="curso" style="width: 100%" onKeyDown="if ((event.keyCode >= 48) && (event.keyCode <= 57)) return false;"></td>
 															<td width="20%"><input type="submit" value="Adicionar" class="botao"></td>
 														  </tr>
 														  </form>

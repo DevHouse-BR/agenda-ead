@@ -6,68 +6,18 @@ $TITULO_PG = "TAREFA";
 $PERMISSAO_DE_ACESSO = "aluno/professor";
 require("includes/permissoes.php");
 
-require("includes/selects_turmas_cursos.php");	//Código para os selects de curso e turma
-constroi_select_turmas("");
-
-if($_POST["modo"] == "add"){	//Quando o script está rodando em modo de adição ao banco,
-	$tipo = $_POST["tipo"];		//ele recolhe as informações digitadas previamente.
-	$nome = $_POST["nome"];
-	$descricao = $_POST["descricao"];
-	$data_dia = $_POST["data_dia"];
-	$data_mes = $_POST["data_mes"];
-	$data_ano = $_POST["data_ano"];
-	$email = $_POST["email"];
-	$wap = $_POST["wap"];
-	$curso = $_POST["curso"];
-	$turma = $_POST["turma"];
-	$avisar = $_POST["avisar"];
-	$opcao = $_POST["opcoes"];
-	$prioridade = $_POST["prioridade"];
-	$horario_hora = $_POST["horario_hora"];
-	$horario_minuto = $_POST["horario_minuto"];
-
-	
-	if($opcao == "em_grupo") $desc_opcao = $_POST["grupo"];	//Caso a tarefa seja para um grupo específico, o campo descrição da opção armazenará o nome do grupo.
-	
-	if($opcao == "privado") $desc_opcao = $_COOKIE["cd_usuario_agenda"]; //Caso a tarefa seja para apenas a pessoa que a agendou, o campo descrição da opção armazenará o código o usuário.
-	
-	if($email == true) $email = "s";
-	else $email = "n";
-	
-	if($wap == true) $wap = "s";
-	else $wap = "n";
-
-	$dia = mktime($horario_hora, $horario_minuto, 0, $data_mes, $data_dia, $data_ano);
-	$avisar = $dia - ($avisar * 86400);
-		
-	$query = "INSERT INTO tarefas (tipo, nome, descricao, prazo, email, wap, avisar, prioridade, curso, turma, opcao, desc_opcao, dia, mes, ano, avisado) VALUES ('";
-	$query .= $tipo ."','";
-	$query .= $nome ."','";
-	$query .= $descricao ."','";
-	$query .= $dia ."','";
-	$query .= $email ."','";
-	$query .= $wap ."','";
-	$query .= $avisar ."','";
-	$query .= $prioridade ."','";
-	$query .= $curso ."','";
-	$query .= $turma ."','";
-	$query .= $opcao ."','";
-	$query .= $desc_opcao ."','";
-	$query .= $data_dia ."','";
-	$query .= $data_mes ."','";
-	$query .= $data_ano ."',";
-	$query .= "'n')";
-
-	require("includes/conectar_mysql.php");
-		$result = mysql_query($query) or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
-		if($result) $ok = true;
-	require("includes/desconectar_mysql.php");
-}
+require("includes/conectar_mysql.php");
+$query = "SELECT curso, turma FROM usuarios WHERE cd='" . $HTTP_COOKIE_VARS["cd_usuario_agenda"] . "'";
+$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+$aluno = mysql_fetch_array($result, MYSQL_ASSOC);
+$curso = $aluno["curso"];
+$turma = $aluno["turma"];
+require("includes/desconectar_mysql.php");
 ?>
 
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -83,24 +33,12 @@ if($_POST["modo"] == "add"){	//Quando o script está rodando em modo de adição ao
 		</style>
 		<script language="JavaScript" src="includes/menuhorizontal.js"></script>
 		<script language="JavaScript">
-		<?php //Codigo necessário para os menus de cursos e turmas
-			for ($i = 0; $i <= sizeof($selects); $i ++){
-				echo($selects[$i] . "\n");
-			}
-			if($ok) echo('alert("Tarefa Agendada!");');
-		?>
-			function muda_turma(){ //Codigo necessário para os menus de cursos e turmas
-				var str = new String(tarefa.curso.value);
-				var variavel = str.split(" ");
-				variavel = variavel.join("_");
-				if (variavel.length != 0) eval("selects.innerHTML = " + variavel + ";");
-			}
 			function valida_form(){ //Valida o formulário
 				f = document.forms[0];
-				if ((f.nome.value != "") && (f.descricao.value != "") && (f.data.value != "")){
+				if ((f.nome.value != "") && (f.descricao.value != "") && (f.curso.value != "") && (f.turma.value != "")){
 					f.submit();
 				}
-				else alert("Todos os campos são obrigatórios!");
+				else alert("Os campos Nome, Descrição, Curso e Turma são obrigatórios!");
 			}
 			function libera_grupo(botao){	//Como no envido de mensagem esta função libera o campo de texto de grupo para que seja editado somente se selecionada a opção em grupo.
 				var x = document.forms[0].opcoes[botao].value;
@@ -132,14 +70,14 @@ if($_POST["modo"] == "add"){	//Quando o script está rodando em modo de adição ao
         <tr> 
           <td colspan="2" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr>
-                <td width="22%" height="70">&nbsp;</td>
-                <td width="51%">&nbsp;</td>
-                <td width="27%">&nbsp;</td>
+                <td width="22%"></td>
+                <td width="51%"></td>
+                <td width="27%"></td>
               </tr>
               <tr>
                 <td>&nbsp;</td>
                 <td><table width="100%" border="0" cellspacing="1" cellpadding="1">
-                    <form name="tarefa" method="post" action="tarefa.php">
+                    <form name="tarefa" method="post" action="salva_tarefa.php">
                       <tr> 
                         <td width="31%" align="right" class="nomecampo">Tipo:</td>
                         <td width="69%"><select name="tipo" id="tipo">
@@ -164,11 +102,11 @@ if($_POST["modo"] == "add"){	//Quando o script está rodando em modo de adição ao
 									for($i = 10; $i < 32; $i++) echo('<option value="' . $i . '">' . $i . '</option>'); ?>
 							</select>/
 						<select name="data_mes">
-							<?php 	for($i = 1; $i < 10; $i++) echo('<option value="0' . $i . '">0' . $i . '</option>');	//Utilizando o php para economizar digitar todas as opções... :-) 
+							<?php 	for($i = 1; $i < 10; $i++) echo('<option value="0' . $i . '">0' . $i . '</option>');	//Utilizando o php para economizar digitar todas as opções... 
 									for($i = 10; $i < 13; $i++) echo('<option value="' . $i . '">' . $i . '</option>'); ?>
 						</select>/
 						<select name="data_ano">
-							<?php 	for($i = (int)date("Y"); $i < (int)date("Y") + 10; $i++) echo('<option value="' . $i . '">' . $i . '</option>');	//Utilizando o php para economizar digitar todas as opções... :-) ?>
+							<?php 	for($i = (int)date("Y"); $i < (int)date("Y") + 10; $i++) echo('<option value="' . $i . '">' . $i . '</option>');	//Utilizando o php para economizar digitar todas as opções... ?>
 						</select>
 						</td>
                       </tr>
@@ -176,32 +114,19 @@ if($_POST["modo"] == "add"){	//Quando o script está rodando em modo de adição ao
                       	<td align="right" class="nomecampo">Hor&aacute;rio:</td>
                     	<td>
 							<select name="horario_hora">
-							<?php 	for($i = 0; $i < 10; $i++) echo('<option value="' . $i . '">0' . $i . '</option>'); //Utilizando o php para economizar digitar todas as opções... :-) 
+							<?php 	for($i = 0; $i < 10; $i++) echo('<option value="' . $i . '">0' . $i . '</option>'); //Utilizando o php para economizar digitar todas as opções...  
 									for($i = 10; $i < 25; $i++) echo('<option value="' . $i . '">' . $i . '</option>'); ?>
 							</select>:
 							<select name="horario_minuto">
-							<?php 	for($i = 0; $i < 10; $i++) echo('<option value="' . $i . '">0' . $i . '</option>'); //Utilizando o php para economizar digitar todas as opções... :-) 
+							<?php 	for($i = 0; $i < 10; $i++) echo('<option value="' . $i . '">0' . $i . '</option>'); //Utilizando o php para economizar digitar todas as opções...  
 									for($i = 10; $i < 60; $i++) echo('<option value="' . $i . '">' . $i . '</option>'); ?>
 							</select>
 						</td>
                     </tr>
                       <tr> 
-                        <td align="right" class="nomecampo">Enviar por:</td>
-                        <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="4%" align="right"><input type="checkbox" name="email"> 
-                              </td>
-                              <td width="26%" class="nomecampo">E-mail</td>
-                              <td width="8%" align="right"> <input type="checkbox" name="wap"> 
-                              </td>
-                              <td width="62%" class="nomecampo">Wap</td>
-                            </tr>
-                          </table></td>
-                      </tr>
-                      <tr> 
                         <td align="right" class="nomecampo">&nbsp;Avisar com</td>
                         <td class="nomecampo"> <select name="avisar">
-                            <?php 	for($i = 1; $i < 11; $i++) echo('<option value="' . $i . '">' . $i . '</option>'); //Utilizando o php para economizar digitar todas as opções... :-) 
+                            <?php 	for($i = 1; $i < 11; $i++) echo('<option value="' . $i . '">' . $i . '</option>'); //Utilizando o php para economizar digitar todas as opções... 
 							?>
                           </select>
                           dias de anteced&ecirc;ncia.</td>
@@ -218,13 +143,11 @@ if($_POST["modo"] == "add"){	//Quando o script está rodando em modo de adição ao
                       </tr>
                       <tr> 
                         <td align="right" class="nomecampo">Curso:</td>
-                        <td> 
-                          <?=constroi_select_curso();?>
-                        </td>
+                        <td><input class="campotxt" type="text" name="curso" value="<?=$curso?>" disabled></td>
                       </tr>
                       <tr> 
                         <td align="right" class="nomecampo">Turma:</td>
-                        <td><div id="selects"></div></td>
+                        <td><input class="campotxt" type="text" name="turma" value="<?=$turma?>" disabled></td>
                       </tr>
 					  <tr> 
                         <td align="right" valign="top" class="nomecampo">Op&ccedil;&otilde;es:</td>

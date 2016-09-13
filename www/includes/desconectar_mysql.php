@@ -1,3 +1,3 @@
-<? //Simplesmente desconecta do banco.
+<? //Desconecta do banco.
 mysql_close($db); 
 ?>

@@ -10,32 +10,32 @@ require("includes/permissoes.php");
 require("includes/selects_turmas_cursos.php");
 constroi_select_turmas("");
 
-if($_POST["modo"] == "enviar"){  //Caso esteja rodando em modo=enviar.
-	$tipo = $_POST["tipo"];
-	$assunto = $_POST["assunto"];		//Recolhe as informações digitadas
-	$mensagem = $_POST["mensagem"];
-	$opcao = $_POST["opcoes"];
-	$curso = $_POST["curso"];
-	$turma = $_POST["turma"];
+if($HTTP_POST_VARS["modo"] == "enviar"){  //Caso esteja rodando em modo=enviar.
+	$tipo = $HTTP_POST_VARS["tipo"];
+	$assunto = $HTTP_POST_VARS["assunto"];		//Recolhe as informações digitadas
+	$mensagem = $HTTP_POST_VARS["mensagem"];
+	$opcao = $HTTP_POST_VARS["opcoes"];
+	$curso = $HTTP_POST_VARS["curso"];
+	$turma = $HTTP_POST_VARS["turma"];
 	
-	if ($_COOKIE["tipo_usuario_agenda"] == "professor") $de = "Prof. " . $_COOKIE["nome_usuario_agenda"]; //caso seja o professor a enviar a mensagem é adicionado a abreviatura de professor na frente do seu nome.
-	else $de =  $_COOKIE["nome_usuario_agenda"];
+	if ($HTTP_COOKIE_VARS["tipo_usuario_agenda"] == "professor") $de = "Prof. " . $HTTP_COOKIE_VARS["nome_usuario_agenda"]; //caso seja o professor a enviar a mensagem é adicionado a abreviatura de professor na frente do seu nome.
+	else $de =  $HTTP_COOKIE_VARS["nome_usuario_agenda"];
 
 	if($opcao == "todos"){ //Caso a mensagem seja para todos os usuarios da agenda.
 		require("includes/conectar_mysql.php");
-		$query = "SELECT nome, email FROM usuarios WHERE (tipo='aluno')";
+		$query = "SELECT nome, email FROM usuarios";
 		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 		while($usuario = mysql_fetch_array($result, MYSQL_ASSOC)){
-			$ok = mail($usuario["email"], $tipo . ": " . $assunto, "Caro, " . $usuario["nome"] . "\n\n" . $mensagem, "From: " . $de . "<" . $_COOKIE["email_usuario_agenda"] . ">");
+			$ok = mail($usuario["email"], $tipo . ": " . $assunto, "Caro, " . $usuario["nome"] . "\n\n" . $mensagem, "From: " . $de . "<" . $HTTP_COOKIE_VARS["email_usuario_agenda"] . ">");
 		}
 		require("includes/desconectar_mysql.php");
 	}
 	if($opcao == "curso_turma"){ //Caso a mensagem seja para apenas uma turma de um determinado curso.
 		require("includes/conectar_mysql.php");
-		$query = "SELECT nome, email FROM usuarios WHERE tipo='aluno' AND curso='" . $curso . "' AND turma='" . $turma . "'";
+		$query = "SELECT nome, email FROM usuarios WHERE curso='" . $curso . "' AND turma='" . $turma . "'";
 		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 		while($usuario = mysql_fetch_array($result, MYSQL_ASSOC)){
-			$ok = mail($usuario["email"], $tipo . ": " . $assunto, "Caro, " . $usuario["nome"] . "\n\n" . $mensagem, "From: " . $de . "<" . $_COOKIE["email_usuario_agenda"] . ">");
+			$ok = mail($usuario["email"], $tipo . ": " . $assunto, "Caro, " . $usuario["nome"] . "\n\n" . $mensagem, "From: " . $de . "<" . $HTTP_COOKIE_VARS["email_usuario_agenda"] . ">");
 		}
 		require("includes/desconectar_mysql.php");
 	}
@@ -44,7 +44,7 @@ if($_POST["modo"] == "enviar"){  //Caso esteja rodando em modo=enviar.
 
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -64,7 +64,7 @@ if($_POST["modo"] == "enviar"){  //Caso esteja rodando em modo=enviar.
 			for ($i = 0; $i <= sizeof($selects); $i ++){
 				echo($selects[$i] . "\n");
 			}
-			if($ok) echo('alert("Tarefa Agendada!");');
+			if($ok) echo('alert("Mensagem Enviada!");');
 		?>
 			function muda_turma(){
 				var str = new String(document.forms[0].curso.value);
@@ -129,19 +129,6 @@ if($_POST["modo"] == "enviar"){  //Caso esteja rodando em modo=enviar.
                       <tr> 
                         <td align="right" valign="top" class="nomecampo">Mensagem:</td>
                         <td><textarea name="mensagem" class="campotxt" rows="5"></textarea></td>
-                      </tr>
-                      <tr> 
-                        <td align="right" class="nomecampo">Enviar por:</td>
-                        <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
-                            <tr> 
-                              <td width="4%" align="right"><input type="checkbox" name="email"> 
-                              </td>
-                              <td width="26%" class="nomecampo">E-mail</td>
-                              <td width="8%" align="right"> <input type="checkbox" name="wap"> 
-                              </td>
-                              <td width="62%" class="nomecampo">Wap</td>
-                            </tr>
-                          </table></td>
                       </tr>
                       <tr> 
                         <td align="right" valign="top" class="nomecampo">Op&ccedil;&otilde;es:</td>

@@ -1,62 +1,13 @@
 <?php
 
-# Este Script é muito parecido com o script de compromisso só que com algumas particularidades. Ele não verifica a existência de outras
-# Atividades agendadas para o mesmo horário.
-
 $TITULO_PG = "EVENTO";
 $PERMISSAO_DE_ACESSO = "aluno/professor";
 require("includes/permissoes.php");
-
-if($_POST["modo"] == "add"){
-	$categoria = "evento";
-	$tipo = $_POST["tipo"];
-	$nome = $_POST["nome"];
-	$descricao = $_POST["descricao"];
-	$data_dia = $_POST["data_dia"];
-	$data_mes = $_POST["data_mes"];
-	$data_ano = $_POST["data_ano"];
-	$horario_hora = $_POST["horario_hora"];
-	$horario_minuto = $_POST["horario_minuto"];
-	$duracao = $_POST["duracao"];
-	$email = $_POST["email"];
-	$wap = $_POST["wap"];
-	$local = $_POST["local"];
-	$avisar = $_POST["avisar"];
-	
-	if($email == true) $email = "s";
-	else $email = "n";
-	
-	if($wap == true) $wap = "s";
-	else $wap = "n";
-	
-	$inicio = mktime($horario_hora, $horario_minuto, 0, $data_mes, $data_dia, $data_ano);
-	$fim = $inicio + (($duracao * 60) * 60);
-	$avisar = $inicio - ($avisar * 86400);
-		
-	$query = "INSERT INTO eventos (tipo, nome, descricao, inicio, fim, dia, mes, ano, email, wap, avisar, local, avisado) VALUES ('";
-	$query .= $tipo ."','";
-	$query .= $nome ."','";
-	$query .= $descricao ."','";
-	$query .= $inicio ."','";
-	$query .= $fim ."','";
-	$query .= $data_dia ."','";
-	$query .= $data_mes ."','";
-	$query .= $data_ano ."','";
-	$query .= $email ."','";
-	$query .= $wap ."','";
-	$query .= $avisar ."','";
-	$query .= $local . "', 'n')";
-
-	require("includes/conectar_mysql.php");
-		$result = mysql_query($query) or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
-		if($result) $ok = true;
-	require("includes/desconectar_mysql.php");
-}
 ?>
 
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -72,10 +23,9 @@ if($_POST["modo"] == "add"){
 		</style>
 		<script language="JavaScript" src="includes/menuhorizontal.js"></script>
 		<script language="JavaScript">
-			<?php if($ok) echo("alert('Evento agendado!');"); ?>
 			function valida_form(){
 				f = document.forms[0];
-				if ((f.nome.value != "") && (f.descricao.value != "") && (f.data.value != "") && (f.local.value != "")){
+				if ((f.nome.value != "") && (f.descricao.value != "") && (f.local.value != "")){
 					f.submit();
 				}
 				else alert("Todos os campos são obrigatórios!");
@@ -101,7 +51,7 @@ if($_POST["modo"] == "add"){
               <tr>
                 <td>&nbsp;</td>
                 <td><table width="100%" border="0" cellspacing="1" cellpadding="1">
-					<form name="evento" method="post" action="evento.php">
+					<form name="evento" method="post" action="salva_evento.php">
                     <tr> 
                       <td width="31%" align="right" class="nomecampo">Tipo:</td>
                       <td width="69%"><select name="tipo" id="tipo">
@@ -131,11 +81,11 @@ if($_POST["modo"] == "add"){
 									for($i = 10; $i < 32; $i++) echo('<option value="' . $i . '">' . $i . '</option>'); ?>
 							</select>/
 						<select name="data_mes">
-							<?php 	for($i = 1; $i < 10; $i++) echo('<option value="0' . $i . '">0' . $i . '</option>');	//Utilizando o php para economizar digitar todas as opções... :-) 
+							<?php 	for($i = 1; $i < 10; $i++) echo('<option value="0' . $i . '">0' . $i . '</option>');	//Utilizando o php para economizar digitar todas as opções...
 									for($i = 10; $i < 13; $i++) echo('<option value="' . $i . '">' . $i . '</option>'); ?>
 						</select>/
 						<select name="data_ano">
-							<?php 	for($i = (int)date("Y"); $i < (int)date("Y") + 10; $i++) echo('<option value="' . $i . '">' . $i . '</option>');	//Utilizando o php para economizar digitar todas as opções... :-) ?>
+							<?php 	for($i = (int)date("Y"); $i < (int)date("Y") + 10; $i++) echo('<option value="' . $i . '">' . $i . '</option>');	//Utilizando o php para economizar digitar todas as opções... ?>
 						</select>
 					  </td>
                     </tr>
@@ -160,19 +110,6 @@ if($_POST["modo"] == "add"){
 							?>
 							</select><font color="#003399" face="Arial, Helvetica, sans-serif" size="2"><b>&nbsp;horas</b></font>
 						</td>
-                    </tr>
-                    <tr> 
-                      <td align="right" class="nomecampo">Enviar por:</td>
-                      <td><table width="100%" border="0" cellspacing="0" cellpadding="0">
-                          <tr> 
-                            <td width="4%" align="right"><input type="checkbox" name="email"> 
-                            </td>
-                            <td width="26%" class="nomecampo">E-mail</td>
-                            <td width="8%" align="right"> <input type="checkbox" name="wap"> 
-                            </td>
-                            <td width="62%" class="nomecampo">Wap</td>
-                          </tr>
-                        </table></td>
                     </tr>
                     <tr> 
                       <td align="right" class="nomecampo">&nbsp;Avisar com</td>

@@ -6,10 +6,10 @@
 $PERMISSAO_DE_ACESSO = "aluno/professor";
 require("includes/permissoes.php");
 
-$tipo = $_GET["tipo"];	//Recebe pela URL os parâmetros necessários para a execução.
-$cd = $_GET["cd"];
+$tipo =  $HTTP_GET_VARS["tipo"];	//Recebe pela URL os parâmetros necessários para a execução.
+$cd =  $HTTP_GET_VARS["cd"];
 
-//As funções abaixo são simples. Elas montam o código HTML para exibir todas as informações gravadas no banco de dados de acordo
+//Elas montam o código HTML para exibir todas as informações gravadas no banco de dados de acordo
 // com o tipo da atividade selecionada.
 
 function coleta_informacoes_compromisso(){
@@ -19,12 +19,6 @@ function coleta_informacoes_compromisso(){
 	$query = "SELECT * FROM compromissos WHERE cd=" . $cd;
 	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 	$compromisso = mysql_fetch_array($result, MYSQL_ASSOC);
-	
-	if($compromisso["wap"] == "s") $wap = "checked";
-	else $wap = "";
-	
-	if($compromisso["email"] == "s") $email = "checked";
-	else $email = "";
 	
 	$info_form 	= 	'<table width="100%" border="0" cellspacing="1" cellpadding="1">'
 				.		'<tr>'
@@ -50,19 +44,6 @@ function coleta_informacoes_compromisso(){
 				.		'<tr>'
 				.			'<td align="right" class="interior">Dura&ccedil;&atilde;o:</td>'
 				.			'<td class="interior"><input type="text" name="duracao" class="campotxt" value="' . ((((int) $compromisso["fim"] - (int) $compromisso["inicio"])/60)/60) . ' horas"></td>'
-				.		'</tr>'
-				.		'<tr>'
-				.			'<td align="right" class="interior">Enviar por:</td>'
-				.			'<td class="interior">'
-				.				'<table width="100%" border="0" cellspacing="0" cellpadding="0">'
-				.					'<tr>'
-				.						'<td width="4%" align="right"><input type="checkbox" name="email" ' . $email . '></td>'
-				.						'<td width="35%" class="nomecampo">E-mail</td>'
-				.   	       			'<td width="8%" align="right"><input type="checkbox" name="wap" ' . $wap . '></td>'
-				.						'<td width="53%" class="nomecampo">Wap</td>'
-				.					'</tr>'
-				.				'</table>'
-				.			'</td>'
 				.		'</tr>'
 				.		'<tr>'
 				.			'<td align="right" class="interior">Curso:</td>'
@@ -125,19 +106,6 @@ function coleta_informacoes_evento(){
 				.			'<td class="interior"><input type="text" name="duracao" class="campotxt" value="' . ((((int) $evento["fim"] - (int) $evento["inicio"])/60)/60) . ' horas"></td>'
 				.		'</tr>'
 				.		'<tr>'
-				.			'<td align="right" class="interior">Enviar por:</td>'
-				.			'<td class="interior">'
-				.				'<table width="100%" border="0" cellspacing="0" cellpadding="0">'
-				.					'<tr>'
-				.						'<td width="4%" align="right"><input type="checkbox" name="email" ' . $email . '></td>'
-				.						'<td width="35%" class="nomecampo">E-mail</td>'
-				.   	       			'<td width="8%" align="right"><input type="checkbox" name="wap" ' . $wap . '></td>'
-				.						'<td width="53%" class="nomecampo">Wap</td>'
-				.					'</tr>'
-				.				'</table>'
-				.			'</td>'
-				.		'</tr>'
-				.		'<tr>'
 				.			'<td align="right" class="interior">&nbsp;Avisar com</td>'
 				.			'<td class="interior"><input type="text" name="avisar" class="campotxt" value="' . (((($evento["inicio"] - $evento["avisar"])/60)/60)/24) . ' dias de anteced&ecirc;ncia."></td>'
 				.		'</tr>'
@@ -184,19 +152,6 @@ function coleta_informacoes_tarefa(){
 				.		'<tr>'
 				.			'<td align="right" class="interior">Prioridade</td>'
 				.			'<td class="interior"><input type="text" name="duracao" class="campotxt" value="' . $tarefa["prioridade"] . '"></td>'
-				.		'</tr>'
-				.		'<tr>'
-				.			'<td align="right" class="interior">Enviar por:</td>'
-				.			'<td class="interior">'
-				.				'<table width="100%" border="0" cellspacing="0" cellpadding="0">'
-				.					'<tr>'
-				.						'<td width="4%" align="right"><input type="checkbox" name="email" ' . $email . '></td>'
-				.						'<td width="35%" class="nomecampo">E-mail</td>'
-				.   	       			'<td width="8%" align="right"><input type="checkbox" name="wap" ' . $wap . '></td>'
-				.						'<td width="53%" class="nomecampo">Wap</td>'
-				.					'</tr>'
-				.				'</table>'
-				.			'</td>'
 				.		'</tr>'
 				.		'<tr>'
 				.			'<td align="right" class="interior">Opção:</td>'

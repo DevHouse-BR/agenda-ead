@@ -1,14 +1,14 @@
 <?php
-//Este script apenas chama as includes de menu e título e contém a tabela de professores.
+//Este script chama as includes de menu e título e contém a tabela de professores.
 
-$PERMISSAO_DE_ACESSO = "professor";
+$PERMISSAO_DE_ACESSO = "root/professor";
 require("includes/permissoes.php");
 
 $TITULO_PG = "PROFESSORES CADASTRADOS";
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -36,7 +36,7 @@ $TITULO_PG = "PROFESSORES CADASTRADOS";
               </tr>
               <tr>
                 <td>&nbsp;</td>
-                <td><iframe width="100%" frameborder="0" height="260" src="tabela_professores.php"></iframe></td>
+                <td><iframe width="100%" frameborder="0" height="306" src="tabela_professores.php"></iframe></td>
                 <td>&nbsp;</td>
               </tr>
               <tr>

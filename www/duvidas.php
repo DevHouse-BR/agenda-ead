@@ -3,14 +3,14 @@
 #	Este script não foi escrito, é uma cópia da lista de contatos. #
 ####################################################################
 
-$PERMISSAO_DE_ACESSO = "professor";
+$PERMISSAO_DE_ACESSO = "professor/aluno";
 require("includes/permissoes.php");
 
-$TITULO_PG = "LISTA DE CONTATOS";
+$TITULO_PG = "DÚVIDAS";
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -45,7 +45,7 @@ $TITULO_PG = "LISTA DE CONTATOS";
               </tr>
               <tr>
                 <td>&nbsp;</td>
-                <td><iframe width="100%" id="viz" frameborder="0" height="260" src="tabela_links.php"></iframe></td>
+                <td><iframe width="100%" id="viz" frameborder="0" height="306" src="duvidas_int.php"></iframe></td>
                 <td>&nbsp;</td>
               </tr>
               <tr>

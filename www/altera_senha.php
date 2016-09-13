@@ -8,9 +8,9 @@
 $PERMISSAO_DE_ACESSO = "aluno/professor"; 	#tanto alunos como professores podem rodar este script.
 require("includes/permissoes.php");			#chama a include de verificação de permissões.
 
-$cd = $_COOKIE["cd_usuario_agenda"];								#Pega o código do usuário através do cookie gravado no mesmo.
-$nova_senha = $_POST["nova_senha"];									#Pega a nova senha que foi digitada no formulário via metodo POST
-$confirmacao = $_POST["confirmacao"];								#Pega também a confirmação da senha.
+$cd = $HTTP_COOKIE_VARS["cd_usuario_agenda"];								#Pega o código do usuário através do cookie gravado no mesmo.
+$nova_senha = $HTTP_POST_VARS["nova_senha"];									#Pega a nova senha que foi digitada no formulário via metodo POST
+$confirmacao = $HTTP_POST_VARS["confirmacao"];								#Pega também a confirmação da senha.
 if (strcmp(trim($usuario["senha"]), trim($senha)) != 0) {			#Compara a senha com a sua comfirmação.
 	header("Location: form_senha.php?status=alerta");				#Se estiverem diferentes ele redireciona o browser para o formulario
 	die();															#da senha mostrando uma mensagem de erro e interrompe a execução do script com a função die();

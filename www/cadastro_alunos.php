@@ -12,14 +12,14 @@ $TITULO_PG = "ALUNO";						//Título da página
 $PERMISSAO_DE_ACESSO = "professor";			//Permissões
 require("includes/permissoes.php");
 
-$modo = $_GET["modo"];	//Recolhe da URL o parâmetro "modo". Ele seta modo de funcionalidade deste script.
+$modo =  $HTTP_GET_VARS["modo"];	//Recolhe da URL o parâmetro "modo". Ele seta modo de funcionalidade deste script.
 
 if($modo == "update"){
-	$parametros = "?modo=update&cd=" . $_GET["cd"]; //Cria a variavel parâmetros para passar os valores para o script php que será executado em conjunto com este script.
+	$parametros = "?modo=update&cd=" .  $HTTP_GET_VARS["cd"]; //Cria a variavel parâmetros para passar os valores para o script php que será executado em conjunto com este script.
 }
 if($modo == "update"){	// Caso o script rode em modo de update ele vai buscar do banco de dados o aluno de codigo também passado por parâmetro na URL.
 	require("includes/conectar_mysql.php");
-		$cd = $_GET["cd"];
+		$cd =  $HTTP_GET_VARS["cd"];
 		$query = "SELECT curso, turma, professor FROM usuarios WHERE cd=" . $cd;
 		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 		$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
@@ -34,7 +34,7 @@ constroi_select_turmas("");	//Função para construir os selects das turmas de aco
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<!--Estilos CSS-->
 		<style type="text/css">
 			@import url("includes/estilo.css");
@@ -44,7 +44,7 @@ constroi_select_turmas("");	//Função para construir os selects das turmas de aco
 				border: 1px solid #666666;
 			}
 		</style>
-		<script language="JavaScript" src="includes/menuhorizontal.js"></script><!--Link para o arquivo que contem as funções em javascript para execução do menu de funções-->
+		<script language="JavaScript" src="includes/menuhorizontal.js"></script><!--Link para o arquivo que contém as funções em javascript para execução do menu de funções-->
 		<script language="JavaScript">
 		<?php //Código em PHP para inserir variáveis de javascript que contém os códigos HTML dos selects de turmas. Também faz parte do código necessário para gerar os menus dinamicos de cursos e turmas.
 			for ($i = 0; $i <= sizeof($selects); $i ++){ //Este loop imprime o conteudo de cada um dos elementos do array selects que é construido dentro da include selects_turmas_cursos.php.
@@ -53,7 +53,7 @@ constroi_select_turmas("");	//Função para construir os selects das turmas de aco
 		?>
 			function muda_turma(){	//Esta função em javascript também faz parte do código para os selects dinamicos. Sua função é mudar o select turmas para um que esteja de acordo com o curso selecionado. 
 				var str = new String(form1.curso.value); //Pega o nome do curso que foi selecionado e cria um objeto do tipo string.
-				var variavel = str.split(" ");	//Usa o metodo split da função que vai criar um array contendo os elementos da string divididos por espaço. Isto porque os selects de turmas levam o nome do curso correpondente e são carregados em forma de variáveis mas as variaveis não podem ter espaços em branco nos seus nomes. Uma olhada no na include e no código fonte (html) gerado por este script (exibir->Código Fonte) esclarecerá maiores dúvidas.
+				var variavel = str.split(" ");	//Usa o metodo split da função que vai criar um array contendo os elementos da string divididos por espaço. Isto porque os selects de turmas levam o nome do curso correpondente e são carregados em forma de variáveis mas as variaveis não podem ter espaços em branco nos seus nomes.
 				variavel = variavel.join("_");	//Une novamente o nome do curso só que com o "underline" _ no lugar dos espaços em branco.
 				if (variavel.length != 0) eval("selects.innerHTML = " + variavel + ";"); //Troca todo o conteudo dentro da tag <div> de id="selects" para o html que está contido na variavel de nome do curso selecionado.
 			}
@@ -63,7 +63,7 @@ constroi_select_turmas("");	//Função para construir os selects das turmas de aco
 		<table width="100%" border="0">
 			<tr>
 				<td align="center" valign="middle"><?php require("includes/menuhorizontal.php"); ?><!-- Chama a include do menu horizontal-->
-					<table width="775" height="383" border="0" cellpadding="0" cellspacing="0" class="janela">
+					<table width="775" border="0" cellpadding="0" cellspacing="0" class="janela">
 					<tr>
 							<td colspan="2" align="center"><?php require("includes/barra_titulo.php"); ?></td>
 						</tr>
@@ -99,6 +99,7 @@ constroi_select_turmas("");	//Função para construir os selects das turmas de aco
 																					}
 																				}
 																			}
+																			else echo('<select style="width:100%;"></select>');
 																		?>
 																	</div>
 																</td>
@@ -109,7 +110,7 @@ constroi_select_turmas("");	//Função para construir os selects das turmas de aco
 														<table width="70%" border="0" cellspacing="1" cellpadding="1">
 															<tr> 
 																<td width="19%" align="left"><font size="2" face="Arial, Helvetica, sans-serif">Professor:</font></td>
-																<td width="81%"><input type="text" name="professor" <?php if($modo == "update") echo("value=\"". $usuario["professor"] . "\""); else echo('value="' . $_COOKIE["nome_usuario_agenda"] . '"'); #Preenche o nome do professor caso esteja em modo update?>></td>
+																<td width="81%"><input type="text" name="professor" <?php if($modo == "update") echo("value=\"". $usuario["professor"] . "\""); else echo('value="' . $HTTP_COOKIE_VARS["nome_usuario_agenda"] . '"'); #Preenche o nome do professor caso esteja em modo update?>></td>
 															</tr>
 														</table>
 													</td>
@@ -122,7 +123,7 @@ constroi_select_turmas("");	//Função para construir os selects das turmas de aco
 									</tr>
 									<tr>
 										<td>&nbsp;</td>
-										<td><iframe width="100%" frameborder="0" height="260" src="form_aluno.php<?=$parametros?>"></iframe></td><!--Iframe onde vai rodar a segunda parte do cadastro de alunos-->
+										<td><iframe width="100%" frameborder="0" height="250" src="form_aluno.php<?=$parametros?>"></iframe></td><!--Iframe onde vai rodar a segunda parte do cadastro de alunos-->
 										<td>&nbsp;</td>
 									</tr>
 									<tr>

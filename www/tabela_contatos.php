@@ -8,7 +8,12 @@ $PERMISSAO_DE_ACESSO = "professor/aluno";
 require("includes/permissoes.php");
 
 require("includes/conectar_mysql.php");
-$query = "SELECT cd, nome, email, obs FROM contatos WHERE dono=" . $_COOKIE["cd_usuario_agenda"];
+$query = "SELECT COUNT(cd) FROM contatos WHERE dono=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
+$result = mysql_query($query) or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
+$total = mysql_fetch_row($result);
+
+
+$query = "SELECT cd, nome, email, obs FROM contatos WHERE dono=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
 $result = mysql_query($query) or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
 ?>
 <html>
@@ -42,6 +47,11 @@ body {
 }
 -->
 </style>
+<script language="JavaScript">
+	function edita(cd){
+		parent.location = 'form_contato.php?modo=update&cd=' + cd;
+	}
+</script>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" class="tabela">
@@ -51,16 +61,21 @@ body {
   <!--<tr align="center" bgcolor="#00CCFF"> 
     <td colspan="3"><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><strong>Professor.........</strong></font></td>
   </tr>-->
+  <?php 
+ 	if ($total[0] > 0){ ?>
   <tr align="center"> 
     <td class="celula"><font color="#0099FF"><strong>Nome</strong></font></td>
-    <td class="celula"><font color="#0099FF"><strong>Email</strong></font></td>
+    <td class="celula"><font color="#0099FF"><strong>E-mail</strong></font></td>
     <td class="celula"><font color="#0099FF"><strong>Obs.</strong></font></td>
   </tr>
+ <? } 
+ 	else echo('<tr align="center"><td class="celula" colspan="3">Nenhum Contato Registrado</td></tr>');
+ ?>
   <?php while($contato = mysql_fetch_array($result, MYSQL_ASSOC)){ 
   	$obs = split("\r\n",chunk_split($contato["obs"],40));
   ?>
 	  <tr> 
-		<td class="celula"><font color="#666666"><a href="javascript: parent.location = 'form_contato.php?modo=update&cd=<?=$contato["cd"]?>'"><?=$contato["nome"]?></a></font></td>
+		<td class="celula"><font color="#666666"><a href="javascript: edita('<?=$contato["cd"]?>');"><?=$contato["nome"]?></a></font></td>
 		<td class="celula" align="center"><font color="#666666"><?=$contato["email"]?></font></td>
 		<td class="celula"><font color="#666666"><?=$obs[0]?>...</font></td>
 	  </tr>

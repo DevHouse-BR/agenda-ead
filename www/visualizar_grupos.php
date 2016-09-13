@@ -1,5 +1,5 @@
 <?php
-//Este script apenas chama as includes de menu e título e contém a tabela de grupos.
+//Este script chama as includes de menu e título e contém a tabela de grupos.
 
 $TITULO_PG = "GRUPOS";
 $PERMISSAO_DE_ACESSO = "aluno/professor";
@@ -7,7 +7,7 @@ require("includes/permissoes.php");
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {

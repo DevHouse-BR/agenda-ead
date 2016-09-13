@@ -1,24 +1,26 @@
 <?php
 
 //Formulario para inserção, modificação e remoção de um link.
-//Este formulario segue a mesma lógica dos formularios anteriores.
 
 $TITULO_PG = "EDITAR LINK";
 $PERMISSAO_DE_ACESSO = "aluno/professor";
 require("includes/permissoes.php");
 
-$modo = $_REQUEST["modo"];
-$executar = $_POST["executar"];
-$cd = $_REQUEST["cd"];
+if($HTTP_GET_VARS["modo"] == "")	$modo = $HTTP_POST_VARS["modo"];
+else $modo = $HTTP_GET_VARS["modo"];
+
+$executar = $HTTP_POST_VARS["executar"];
+if($HTTP_GET_VARS["cd"] == "")	$cd = $HTTP_POST_VARS["cd"];
+else $cd = $HTTP_GET_VARS["cd"];
 
 if($modo == "salvar"){
-	$nome = $_POST["nome"];
-	$descricao = $_POST["descricao"];
-	$link = $_POST["link"];
+	$nome = $HTTP_POST_VARS["nome"];
+	$descricao = $HTTP_POST_VARS["descricao"];
+	$link = $HTTP_POST_VARS["link"];
 	
 	if($executar == "inserir"){
 		$query = "INSERT INTO links (dono, nome, descricao, link) VALUES ('";
-		$query .= $_COOKIE["cd_usuario_agenda"] ."','";
+		$query .= $HTTP_COOKIE_VARS["cd_usuario_agenda"] ."','";
 		$query .= $nome ."','";
 		$query .= $descricao ."','";
 		$query .= $link ."')";
@@ -52,7 +54,7 @@ if($modo == "apagar"){
 
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -121,7 +123,7 @@ if($modo == "apagar"){
                       <tr> 
                         <td align="right">&nbsp;</td>
                         <td align="right">
-							<input name="cancelar" type="reset" value="Apagar" class="botao" onClick="apaga();">
+							<?php if($modo == "update") echo('<input name="apagar" type="button" value="Apagar" class="botao" onClick="apaga();">');?>
                           <input name="incluir" type="button" value="Salvar" class="botao" onClick="valida_form();">
                         </td>
                       </tr>

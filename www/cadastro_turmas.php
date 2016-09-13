@@ -7,20 +7,20 @@ $TITULO_PG = "GERENCIAMENTO DE TURMAS"; //Título
 $PERMISSAO_DE_ACESSO = "professor";		//Permissões
 require("includes/permissoes.php");
 
-$modo = $_POST["modo"];					//Modo de execução do script;
+$modo = $HTTP_POST_VARS["modo"];					//Modo de execução do script;
 
 if($modo == "add"){						//Adiciona no banco as informações digitadas.
 	require("includes/conectar_mysql.php");
 		$query = "INSERT INTO turma_curso (turma, curso) VALUES ('";
-		$query .= $_POST["turma"] ."', '";
-		$query .= $_POST["curso"] ."')";
+		$query .= $HTTP_POST_VARS["turma"] ."', '";
+		$query .= $HTTP_POST_VARS["curso"] ."')";
 		$result = mysql_query($query) or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
 	require("includes/desconectar_mysql.php");
 }
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			input {

@@ -1,6 +1,5 @@
 <?php
 //A tabela turmas esta inserida dentro do cadastro de turmas e mostra todas as turmas cadastradas na tabela turma_curso.
-//Não há novidades no código deste script.
 
 
 $PERMISSAO_DE_ACESSO = "professor";

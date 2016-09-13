@@ -1,16 +1,17 @@
 <?php
-#################################################################################################
-# Este é o complexo formulário que trata a criação e edição das informações de um novo grupo.	#
-#################################################################################################
+#########################################################################################
+# Este é o formulário que trata a criação e edição das informações de um novo grupo.	#
+#########################################################################################
 
 $PERMISSAO_DE_ACESSO = "aluno/professor";		//Permissões
 require("includes/permissoes.php");
 
-$turma = urldecode($_GET["turma"]);		//como foi visto no cadastro_grupo.php os parâmetros enviados para este script são pela url 
-$curso = urldecode($_GET["curso"]);		//mas como nome de curso e turma podem conter caracteres não permitidos então são utilizadas as funções urlencode() de urldecode().
-$modo = $_GET["modo"];
-$executar = $_POST["executar"];
-$cd = $_REQUEST["cd"];
+$turma = urldecode( $HTTP_GET_VARS["turma"]);		//os parâmetros enviados para este script são pela url 
+$curso = urldecode( $HTTP_GET_VARS["curso"]);		//mas como nome de curso e turma podem conter caracteres não permitidos então são utilizadas as funções urlencode() de urldecode().
+$modo =  $HTTP_GET_VARS["modo"];
+$executar = $HTTP_POST_VARS["executar"];
+if($HTTP_GET_VARS["cd"] == "")	$cd = $HTTP_POST_VARS["cd"];
+else $cd = $HTTP_GET_VARS["cd"];
 $ok = false;
 $filtro_sql = " WHERE tipo='aluno' AND curso='" . $curso . "' AND turma='" . $turma . "'";
 // A variável filtro_sql gera a condição para que sejam mostrados os alunos do curso e turma desejados.
@@ -48,16 +49,16 @@ if($modo == ""){ //Caso a variavel modo esteja em branco significa que o script 
 }
 //O Código abaixo só será executado com o script em modo "salva" que vai receber os valores digitados e armazená-los no banco de dados.
 if($modo == "salva"){
-	$nome = $_POST["nome"];
-	$curso = $_POST["curso"];
-	$turma = $_POST["turma"];
-	$professor = $_POST["professor"];
-	$integrantes = $_POST["integrantes"];
+	$nome = $HTTP_POST_VARS["nome"];
+	$curso = $HTTP_POST_VARS["curso"];
+	$turma = $HTTP_POST_VARS["turma"];
+	$professor = $HTTP_POST_VARS["professor"];
+	$integrantes = $HTTP_POST_VARS["integrantes"];
 
 	if ($executar == "add")	{ //Caso seja um novo grupo.
 		$query = "INSERT INTO grupos (nome, cd_criador, curso, turma, professor) VALUES ('";
 		$query .= $nome ."','";
-		$query .= $_COOKIE["cd_usuario_agenda"] ."','";
+		$query .= $HTTP_COOKIE_VARS["cd_usuario_agenda"] ."','";
 		$query .= $curso ."','";
 		$query .= $turma ."','";
 		$query .= $professor ."')";
@@ -91,8 +92,11 @@ if($modo == "salva"){
 	if($executar == "update"){
 		require("includes/conectar_mysql.php");
 		$result = mysql_query("DELETE FROM grupos_integrantes WHERE nome_grupo='" . $nome . "'") or die("Erro ao apagar registros no Banco de dados: " . mysql_error());
-		for($i = 0; $i < count($integrantes); $i++){
-			$result = mysql_query("INSERT INTO grupos_integrantes (nome_grupo, cd_integrante) VALUES ('". $nome . "', '" . $integrantes[$i] . "')") or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
+		$integrantes = array_unique($integrantes);
+		for($i = 0; $i < count($integrantes) +1; $i++){
+			if ($integrantes[$i] != 0){
+				$result = mysql_query("INSERT INTO grupos_integrantes (nome_grupo, cd_integrante) VALUES ('". $nome . "', '" . $integrantes[$i] . "')") or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
+			}
 		}
 		require("includes/desconectar_mysql.php");
 	}
@@ -106,6 +110,16 @@ if($modo == "update"){
 		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 		$grupo = mysql_fetch_array($result, MYSQL_ASSOC);
 	require("includes/desconectar_mysql.php");
+}
+
+if($modo == "apagar"){
+	require("includes/conectar_mysql.php");
+		$query = "DELETE FROM grupos where cd=" . $cd;
+		$result_apagar = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+		$query = "DELETE FROM grupos_integrantes where nome_grupo='" .  $HTTP_GET_VARS["grupo"] . "'";
+		$result_apagar = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+	require("includes/desconectar_mysql.php");
+	die('<html><head><script language="javascript">parent.location = "visualizar_grupos.php";</script></head></html>');
 }
 ?>
 <html>
@@ -185,6 +199,13 @@ body {
 			}
 		}
 	}
+	<?php if($modo == "update"){ ?>
+		function apagar(){
+			if(confirm("Deseja apagar o grupo?")){
+				location = "form_grupo.php?modo=apagar&cd=<?=$cd?>&grupo=<?=$grupo["nome"]?>";
+			}
+		}
+	<? } ?>
 </script>
 <?php 
 if($ok){ ?>
@@ -237,7 +258,7 @@ if($ok){ ?>
 										$query = "SELECT nome, email FROM usuarios WHERE cd=" . $integrante["cd_integrante"];
 										$result2 = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 										while($aluno = mysql_fetch_array($result2, MYSQL_ASSOC)){
-											echo('<option value=' . $aluno["cd"] . '>' . $aluno["nome"] . '</option>');
+											echo('<option value=' . $integrante["cd_integrante"] . '>' . $aluno["nome"] . '</option>');
 										}
 									}
 									require("includes/desconectar_mysql.php");
@@ -250,8 +271,7 @@ if($ok){ ?>
           </tr>
           <tr> 
             <td></td>
-            <td align="right"><input name="incluir" type="button" value="<?php if($modo == "update") echo("Salvar"); else echo("Incluir"); ?>" class="botao" style="width:25%" onClick="valida_form();"> 
-              &nbsp; <input name="cancelar" type="reset" value="Cancelar" class="botao" style="width:25%"></td>
+            <td align="right"><input name="cancelar" <?php if ($modo == "update") echo('value="Apagar" type="button" onclick="javascript: apagar();"'); else echo('type="reset" value="Cancelar"'); ?> class="botao" style="width:25%">&nbsp;<input name="incluir" type="button" value="<?php if($modo == "update") echo("Salvar"); else echo("Incluir"); ?>" class="botao" style="width:25%" onClick="valida_form();"></td>
           </tr>
           <input type="hidden" name="cd" <?php if($modo == "update") echo("value=\"". $grupo["cd"] . "\""); ?>>
           <input type="hidden" name="curso" <?php if($modo == "update") echo("value=\"". $grupo["curso"] . "\""); ?>>

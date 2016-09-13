@@ -11,7 +11,7 @@ require("includes/permissoes.php");				# Chama a Include permissoes.php que exec
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css"><!-- Estilos CSS que alteram as cores, bordas (aparencia) do HTML -->
 			@import url("includes/estilo.css");
 			select {
@@ -25,6 +25,11 @@ require("includes/permissoes.php");				# Chama a Include permissoes.php que exec
 				color: #003399;
 			}
 		</style>
+		<script language="JavaScript">
+			function sair(){
+				if (confirm("Deseja Sair do Programa?")) location = "logout.php";
+			}
+		</script>
 		<script language="JavaScript" src="includes/menuhorizontal.js"></script><!-- Chama o Javascript que contem as funções para o funcionamento do menu de opções do sistema -->
 	</head>
 	<body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
@@ -41,9 +46,9 @@ require("includes/permissoes.php");				# Chama a Include permissoes.php que exec
 									<tr> 
 										<td width="2%" height="70">&nbsp;</td>
 										<td width="96%">
-											<table width="100%">
+											<table width="100%" border="0">
 												<tr>
-													<td width="33%"><iframe width="100%" height="200" src="calendario.php" frameborder="0"></iframe><!-- Iframe é uma frame que pode executar outra pagina dentro deste html. Esta aponta para o calendario.--></td>
+													<td width="33%"><iframe width="100%" height="200" src="calendario.php" frameborder="0"></iframe><!-- Iframe que aponta para o calendario.--></td>
 													<td width="33%"><iframe width="100%" height="310" src="atividades_dia.php" frameborder="0" id="viz" scrolling="yes"></iframe><!-- Iframe que visualiza as tabelas de atividades por dia, semana e mês. --></td>
 													<td width="33%"><iframe width="100%" height="310" src="branco.html" frameborder="0" id="atividade" scrolling="no"></iframe><!-- Iframe que visualiza as informações da atividade selecionada --></td>
 												</tr>

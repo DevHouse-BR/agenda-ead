@@ -1,14 +1,13 @@
 <?php
-#########################################################################################################################
-#	Provavelmente um dos scripts mais complexos do sistema. Ele monta o Calendário que é visualizado dentro do iframe	#
-#	contido no script agenda.php																						#
-#########################################################################################################################
+######################################################################################################
+#   Este script monta o Calendário que é visualizado dentro do iframe contido no script agenda.php   #																						#
+######################################################################################################
 
 $PERMISSAO_DE_ACESSO = "aluno/professor";	//Permissões
 require("includes/permissoes.php");
 
-$mes = $_GET["mes"];						//Este script recebe como parâmetro o mês para que seja construido o calendário de acordo com este mes.
-$ano = $_GET["ano"];						//Todo o código já está preparado para receber como parâmetro o ano também, apesar de não ser usado.
+$mes =  $HTTP_GET_VARS["mes"];						//Este script recebe como parâmetro o mês para que seja construido o calendário de acordo com este mes.
+$ano =  $HTTP_GET_VARS["ano"];		
 
 if ($mes == "") $mes = date("m");			//Caso não seja informado o mes a função date() seta o mes para o mes corrente no servidor.
 if ($ano == "") $ano = date("Y");			//O mesmo para o ano.
@@ -61,7 +60,7 @@ $primeiro_dia_mes = mktime(0,0,0,$mes,1,$ano);				//Timestamp para o primeiro di
 $primeiro_dia_mes_semana = date("w",$primeiro_dia_mes);		//O número do dia da semana que "cai" o primeiro dia do mês
 
 $inicio_calendario = (($primeiro_dia_mes_semana) * 86400);				//A diferença entre o primeiro dia do mês para o primeiro dia a ser mostrado no calendário.
-$primeiro_dia_calendario = $primeiro_dia_mes - $inicio_calendario;		//Subtraindo-se achamos o timestamp para o primeiro dia do calendário. (provavelmente do mês anterior.
+$primeiro_dia_calendario = $primeiro_dia_mes - $inicio_calendario;		//Subtraindo-se achamos o timestamp para o primeiro dia do calendário. (provavelmente do mês anterior)
 
 $calendario = 	"<table height=153 width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"; //Inicia a construção da tabela do calendário.
 	$calendario .=	"<tr>";
@@ -78,13 +77,13 @@ $calendario = 	"<table height=153 width=\"100%\" border=\"0\" cellspacing=\"0\" 
 	$setas = "<table height=153 border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td style=\"font-family: Arial, Helvetica, sans-serif;	font-size: 10px;\">&nbsp;</td></tr>";
 	
 	$dia = $primeiro_dia_calendario;		//A variavel dia é o timestamp do dia que o loop construtor do calendário estará tratando. 
-	$ultimodia = "";						//A variavel ultimo dia guarda o ultimo dia em forma de string para comparar com a variavel dia para não repetir dias no calendário (bug que estava ocorrendo no mês de fevereiro). 
+	$ultimodia = "";						//A variavel ultimo dia guarda o ultimo dia em forma de string para comparar com a variavel dia para não repetir dias no calendário. 
 	for($j = 0; $j <6 ; $j++){				//Da semana 0 até a semana seis
 		if (($j == 0) || (($j != 0) && (date("m", $dia) == $mes))) { //verifica se o primeiro dia desta semana começará com um dia que ainda está no mês corrente.
-			$primeiro_dia_n_semana = $dia;	//A variavel primeiro_dia_n_semana guarda o valor do timestamp da zero hora do primeiro dia desta semana para depois passálo como parâmetro na visualização de atividades semanal.
+			$primeiro_dia_n_semana = $dia;	//A variavel primeiro_dia_n_semana guarda o valor do timestamp da zero hora do primeiro dia desta semana para depois passá-lo como parâmetro na visualização de atividades semanal.
 			$calendario .=	"<tr>";			//Adiciona a tabela a tag de nova linha.
 			for($i = 0; $i < 7; $i++){		//Do primeiro ao sétimo dia da semana:
-				if ($ultimodia != date("j",$dia)){	//Só continuar se o dia for diferente do ultimo dia impresso.
+				if ($ultimodia != date("j",$dia)){	//Só continua se o dia for diferente do ultimo dia impresso.
 					if($dia == $hoje) $calendario .= "<td class=\"hoje\">" . verifica_agendamento($dia) . "</td>";	//Caso o dia analizado seja o dia corrente no servidor ele será impresso no calendário em destaque.
 					else {	//senão: se o dia estiver dentro do mês a ser construido ele será impresso em preto.
 						if (date("m", $dia) == $mes) $calendario .= "<td class=\"interior\">" . verifica_agendamento($dia) . "</td>"; //A cada dia do mês é feita uma verificação no banco de dados para verificar a existência de alguma atividade agendada para aquele dia.
@@ -93,12 +92,12 @@ $calendario = 	"<table height=153 width=\"100%\" border=\"0\" cellspacing=\"0\" 
 						}
 					}
 				}
-				else $i--; //Caso o ultimo dia for igual ao dia sendo analisado então a variavel i vai voltar em uma unidade para poder fechar 7 dias na semana.
+				else $i--; //Caso o ultimo dia for igual ao dia sendo analisado então a variavel $i vai voltar em uma unidade para poder fechar 7 dias na semana.
 				$ultimodia = date("j",$dia); //aqui é gravado a informação na variavel ultimo dia.
 				$ultimo_dia_n_semana = $dia; //O timestamp da zero hora do ultimo dia da semana antes de ser acrecentado mais um dia a variavel dia. (86400 segundos)
 				$dia = $dia + 86400;
 			}
-			$calendario .=	"</tr>"; //A seta abaixo vai com a informação para executar o javascript ver_semana com o intervalo do primeiro ao ultimo dia da semana.
+			$calendario .=	"</tr>"; //A seta abaixo vai com a informação para executar a função em javascript ver_semana com o intervalo do primeiro ao ultimo dia da semana.
 			$setas .= "<tr><td class=\"setas\" align=\"center\" valign=\"middle\" onClick=\"ver_semana('" . $primeiro_dia_n_semana . "-" . $ultimo_dia_n_semana . "');\"><img src=\"img/seta_cal.gif\" alt=\"Visão Semanal\"></td></tr>"; 
 		}
 	}
@@ -129,7 +128,7 @@ $setas .=	"</table>";
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
 <body leftmargin="0" topmargin="0" bottommargin="0" rightmargin="0" marginwidth="0" marginheight="0">
-<table width="106%" border="0" cellpadding="0" cellspacing="0" height="200">
+<table width="100%" border="0" cellpadding="0" cellspacing="0" height="200">
 	<tr>
 		<td align="right" valign="top">
 			<table border="0" cellspacing="0" cellpadding="0">
@@ -187,34 +186,25 @@ $setas .=	"</table>";
 //vermelho.
 function verifica_agendamento($dia){
 	require("includes/conectar_mysql.php");
+	global $HTTP_COOKIE_VARS;
 	
-	if($_COOKIE["tipo_usuario_agenda"] == "professor"){
-		$query = "SELECT COUNT(cd) FROM compromissos WHERE dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "'";
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		$tmp = mysql_fetch_row($result);
-		$ocorrencias = $tmp[0];
+
+	$query = "SELECT turma, curso FROM usuarios where cd=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+	$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
+	
+	$query = "SELECT COUNT(cd) FROM compromissos WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "'";
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+	$tmp = mysql_fetch_row($result);
+	$ocorrencias = $tmp[0];
+	
+	$query = "SELECT COUNT(cd) FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "' AND opcao='todos'";
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+	$tmp = mysql_fetch_row($result);
+	$ocorrencias = $ocorrencias + $tmp[0];
 		
-		$query = "SELECT COUNT(cd) FROM tarefas WHERE dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "'";
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		$tmp = mysql_fetch_row($result);
-		$ocorrencias = $ocorrencias + $tmp[0];
-	}
-	if($_COOKIE["tipo_usuario_agenda"] == "aluno"){
-		$query = "SELECT turma, curso FROM usuarios where cd=" . $_COOKIE["cd_usuario_agenda"];
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
-		
-		$query = "SELECT COUNT(cd) FROM compromissos WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "'";
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		$tmp = mysql_fetch_row($result);
-		$ocorrencias = $tmp[0];
-		
-		$query = "SELECT COUNT(cd) FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "' AND opcao='todos'";
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		$tmp = mysql_fetch_row($result);
-		$ocorrencias = $ocorrencias + $tmp[0];
-		
-		$query = "SELECT nome_grupo FROM grupos_integrantes where cd_integrante=" . $_COOKIE["cd_usuario_agenda"];
+	if($HTTP_COOKIE_VARS["tipo_usuario_agenda"] == "aluno"){
+		$query = "SELECT nome_grupo FROM grupos_integrantes where cd_integrante=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
 		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 		while($grupo = mysql_fetch_array($result, MYSQL_ASSOC)){
 			$query = "SELECT COUNT(cd) FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "' AND desc_opcao='" . $grupo["nome_grupo"] . "'";
@@ -224,7 +214,7 @@ function verifica_agendamento($dia){
 		}
 	}
 	
-	$query = "SELECT COUNT(cd) FROM tarefas WHERE dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "' AND opcao='privado' AND desc_opcao='" . $_COOKIE["cd_usuario_agenda"] . "'";
+	$query = "SELECT COUNT(cd) FROM tarefas WHERE dia='" . date("d",$dia) . "' AND mes='" . date("m",$dia) . "' AND ano='" . date("Y",$dia) . "' AND opcao='privado' AND desc_opcao='" . $HTTP_COOKIE_VARS["cd_usuario_agenda"] . "'";
 	$result2 = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 	$tmp = mysql_fetch_row($result2);
 	$ocorrencias = $ocorrencias + $tmp[0];

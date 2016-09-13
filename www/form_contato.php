@@ -1,25 +1,27 @@
 <?php
 #############################################################################################################################
-# Este script trata todo o cadastro, alteração e remoção dos contatos pessoais. Seu funcionamento segue as caractaristicas	#
+# Este script trata todo o cadastro, alteração e remoção dos contatos pessoais. Seu funcionamento segue as características	#
 # dos outros formularios utilizados neste software.																			#
 #############################################################################################################################
 
 $TITULO_PG = "EDITAR CONTATO";					//Título
 $PERMISSAO_DE_ACESSO = "aluno/professor";		//Permissões
 require("includes/permissoes.php");
+	
+if($HTTP_GET_VARS["modo"] == "")	$modo = $HTTP_POST_VARS["modo"];
+else $modo = $HTTP_GET_VARS["modo"];
 
-$modo = $_REQUEST["modo"];	//A novidade é a utilização do array $_REQUEST. O array request une os arrays $_POST e $_GET. Então se desejado o script pode recolher a mesma informação ora pela url ora pelo formulário.
-$executar = $_POST["executar"];
-$cd = $_REQUEST["cd"];
-
+$executar = $HTTP_POST_VARS["executar"];
+if($HTTP_GET_VARS["cd"] == "")	$cd = $HTTP_POST_VARS["cd"];
+else $cd = $HTTP_GET_VARS["cd"];
 if($modo == "salvar"){
-	$nome = $_POST["nome"];
-	$email = $_POST["email"];
-	$obs = $_POST["obs"];
+	$nome = $HTTP_POST_VARS["nome"];
+	$email = $HTTP_POST_VARS["email"];
+	$obs = $HTTP_POST_VARS["obs"];
 	
 	if($executar == "inserir"){	//Grava um novo contato
 		$query = "INSERT INTO contatos (dono, nome, email, obs) VALUES ('";
-		$query .= $_COOKIE["cd_usuario_agenda"] ."','";
+		$query .= $HTTP_COOKIE_VARS["cd_usuario_agenda"] ."','";
 		$query .= $nome ."','";
 		$query .= $email ."','";
 		$query .= $obs ."')";
@@ -53,7 +55,7 @@ if($modo == "apagar"){	//Caso o modo esteja em apagar este comando sql vai remov
 
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -112,7 +114,7 @@ if($modo == "apagar"){	//Caso o modo esteja em apagar este comando sql vai remov
                         <td width="87%"><input type="text" name="nome" class="campotxt" <?php if($modo == "update") echo('value="' . $contato["nome"] . '"');?>></td>
                       </tr>
 					  <tr> 
-                        <td align="right" class="nomecampo">Email:</td>
+                        <td align="right" class="nomecampo">E-mail:</td>
                         <td><input type="text" name="email" class="campotxt"<?php if($modo == "update") echo('value="' . $contato["email"] . '"');?>></td>
                       </tr>
                       <tr> 
@@ -122,7 +124,7 @@ if($modo == "apagar"){	//Caso o modo esteja em apagar este comando sql vai remov
                       <tr> 
                         <td align="right">&nbsp;</td>
                         <td align="right">
-							<input name="cancelar" type="reset" value="Apagar" class="botao" onClick="apaga();">
+							<?php if($modo == "update") echo('<input name="apagar" type="button" value="Apagar" class="botao" onClick="apaga();">');?>
                           <input name="incluir" type="button" value="Salvar" class="botao" onClick="valida_form();">
                         </td>
                       </tr>

@@ -4,18 +4,18 @@
 #	determinado dia passado como parâmetro.					#
 #############################################################
 
-
 $PERMISSAO_DE_ACESSO = "aluno/professor";			# Seta Permissão para o Aluno e o Professor (ambos podem acessar).
 require("includes/permissoes.php");					# Chama a Include permissoes.php que executa as verificações para saber se o usuario
 													# está logado no sistema e se ele é aluno ou professor.
 
-$dia = $_GET["dia"];								#Pega os parametros passado pela URL
-$mes = $_GET["mes"];								#(formato: atividades_dia.php?dia=00&mes=00&ano=0000)
-$ano = $_GET["ano"];
+$dia =  $HTTP_GET_VARS["dia"];								#Pega os parametros passado pela URL
+$mes =  $HTTP_GET_VARS["mes"];								#(formato: atividades_dia.php?dia=00&mes=00&ano=0000)
+$ano =  $HTTP_GET_VARS["ano"];
 
 if ($dia == "") $dia = date("d");					#Caso o script seja rodado sem a passagem de paramentros via URL
 if ($mes == "") $mes = date("m");					#O mesmo tira como base o dia, mes e ano atuais usando a função date().
 if ($ano == "") $ano = date("Y");
+
 
 switch(date("w", mktime(0,0,0,$mes,$dia,$ano))){	#O parametro "w" da função date() retorna o dia da semana na data especificada pela função mktime();
 	case "0":										#Será feita uma comparação do numero retornado para dizer o dia em português.
@@ -91,7 +91,7 @@ switch(date("w", mktime(0,0,0,$mes,$dia,$ano))){	#O parametro "w" da função date
 
 <?php 
 function constroi_tabela(){
-	global $dia, $mes, $ano;		#Seta quais as variáveis devem ser lidas do escopo global.
+	global $dia, $mes, $ano, $HTTP_COOKIE_VARS;		#Seta quais as variáveis devem ser lidas do escopo global.
 	$linha = array();				#Cria o array linha onde serão armazenadas as informações das linhas da tabela para posteriormente utilizar uma função de ordenação de arrays para deixar as datas em ordem.
 	$ocorrencias = 0;				#Contador que conta o numero de atividades para este dia.
 	$tabela = 	'<table width="100%" border="0" cellspacing="0" cellpadding="0">'
@@ -103,40 +103,27 @@ function constroi_tabela(){
 	
 	require("includes/conectar_mysql.php"); #Conecta ao banco.
 	
-	if($_COOKIE["tipo_usuario_agenda"] == "professor"){	#Caso o usuario seja professor
-		$query = "SELECT cd, tipo, nome, inicio FROM compromissos WHERE dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "'"; #Query: Retorne os compromissos onde dia=dia mes=mes e ano=ano
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
-		while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){ #Executa enquanto tiver registros retornados da consulta (query).
-			array_push($linha, date("H:i",$atividade["inicio"]) . "--" . "Compromisso" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--1"); #insere mais um elemento no array linha.
-			$ocorrencias++; #Soma mais um ao contador
-		}
-		$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "'";	#Query: Retorne as tarefas onde data=data
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
-		while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){#Executa enquanto tiver registros retornados da consulta (query).
-			array_push($linha, date("H:i",$atividade["prazo"]) . "--" . "Tarefa" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--2");#insere mais um elemento no array linha.
-			$ocorrencias++; #Soma mais um ao contador
-		}
+
+	$query = "SELECT turma, curso FROM usuarios where cd=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"]; #Consulta: Retorne o usuario onde o código = cookie
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
+	$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
+		
+	$query = "SELECT cd, tipo, nome, inicio FROM compromissos WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "'"; #Consulta: retorne os compromissos onde turma = usuario_turma, curso = usuario_curso e data=data.
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
+	while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){#Executa enquanto tiver registros retornados da consulta (query).
+		array_push($linha, date("H:i",$atividade["inicio"]) . "--" . "Compromisso" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--1");#insere mais um elemento no array linha.
+		$ocorrencias++; #Soma mais um ao contador
 	}
-	if($_COOKIE["tipo_usuario_agenda"] == "aluno"){ 	#Caso o usuario seja aluno
-		$query = "SELECT turma, curso FROM usuarios where cd=" . $_COOKIE["cd_usuario_agenda"]; #Consulta: Retorne o usuario onde o código = cookie
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
-		$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
 		
-		$query = "SELECT cd, tipo, nome, inicio FROM compromissos WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "'"; #Consulta: retorne os compromissos onde turma = usuario_turma, curso = usuario_curso e data=data.
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
-		while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){#Executa enquanto tiver registros retornados da consulta (query).
-			array_push($linha, date("H:i",$atividade["inicio"]) . "--" . "Compromisso" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--1");#insere mais um elemento no array linha.
-			$ocorrencias++; #Soma mais um ao contador
-		}
+	$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "' AND opcao='todos'"; #Consulta: retorne as tarefas onde curso=usuario_curso, turma=usuario_turma, data=data e opcao="todos"
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
+	while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){#Executa enquanto tiver registros retornados da consulta (query).
+		array_push($linha, date("H:i",$atividade["prazo"]) . "--" . "Tarefa" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--2"); #insere mais um elemento no array linha.
+		$ocorrencias++; #Soma mais um ao contador
+	}
 		
-		$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "' AND opcao='todos'"; #Consulta: retorne as tarefas onde curso=usuario_curso, turma=usuario_turma, data=data e opcao="todos"
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
-		while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){#Executa enquanto tiver registros retornados da consulta (query).
-			array_push($linha, date("H:i",$atividade["prazo"]) . "--" . "Tarefa" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--2"); #insere mais um elemento no array linha.
-			$ocorrencias++; #Soma mais um ao contador
-		}
-		
-		$query = "SELECT nome_grupo FROM grupos_integrantes where cd_integrante=" . $_COOKIE["cd_usuario_agenda"]; #Consulta: Retorne o nome dos grupos da tabela grupos_integrantes onde o código do integrante = cookie
+	if($HTTP_COOKIE_VARS["tipo_usuario_agenda"] == "aluno"){ 	#Caso o usuario seja aluno
+		$query = "SELECT nome_grupo FROM grupos_integrantes where cd_integrante=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"]; #Consulta: Retorne o nome dos grupos da tabela grupos_integrantes onde o código do integrante = cookie
 		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
 		while($grupo = mysql_fetch_array($result, MYSQL_ASSOC)){#Executa enquanto tiver registros retornados da consulta (query).
 			$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "' AND desc_opcao='" . $grupo["nome_grupo"] . "'"; #Consulta: retorne as tarefas onde a turma=usuario_turma, curso=usuario_curso, data=data, desc_opcao=nome do grupo.
@@ -148,7 +135,7 @@ function constroi_tabela(){
 		}
 	}
 	
-	$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "' AND opcao='privado' AND desc_opcao='" . $_COOKIE["cd_usuario_agenda"] . "'"; #Consulta: retorne as tarefas onde data=data, opcao="privado" e descrição da opcao="codigo usuario (cookie)"
+	$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE dia='" . $dia . "' AND mes='" . $mes . "' AND ano='" . $ano . "' AND opcao='privado' AND desc_opcao='" . $HTTP_COOKIE_VARS["cd_usuario_agenda"] . "'"; #Consulta: retorne as tarefas onde data=data, opcao="privado" e descrição da opcao="codigo usuario (cookie)"
 	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	#executa a query ou interrompe o script mostrando o erro.
 	while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){#Executa enquanto tiver registros retornados da consulta (query).
 		array_push($linha, date("H:i",$atividade["prazo"]) . "--" . "Tarefa" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--2"); #insere mais um elemento no array linha.

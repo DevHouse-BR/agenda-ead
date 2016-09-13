@@ -1,21 +1,22 @@
-# Banco de Dados agenda Rodando em localhost 
-# phpMyAdmin MySQL-Dump
-# version 2.5.0
-# http://www.phpmyadmin.net/ (download page)
-#
-# Servidor: localhost
-# Tempo de Genera��o: Nov 16, 2003 at 11:07 AM
-# Vers�o do Servidor: 4.0.13
-# Vers�o do PHP: 4.3.1
-# Banco de Dados : `agenda`
-# --------------------------------------------------------
+# Script para criação do banco de dados AGENDA
 
+# Tabela Compromissos:
 #
-# Estrutura da tabela `compromissos`
-#
-# Creation: Out 26, 2003 at 10:16 PM
-# Last update: Nov 05, 2003 at 03:53 PM
-#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código únicao para cada compromisso. Facilita a localização do registro.
+# tipo = até 100 caracteres, não nulo = Tipo do compromisso (Conferência, Video-Conferência, etc).
+# nome = até 255 Caracteres, não nulo = Nome do compromisso
+# descricao = até 255 caracteres, não nulo = características do compromisso.
+# inicio = inteiro, sem sinal = armazena o timestamp (numero de segundos desde 1970 para uma data precisa)
+# fim = inteiro, sem sinal = armazena o timestamp (numero de segundos desde 1970 para uma data precisa)
+# dia = dois caracteres representando o dia ex: "23"
+# mes = dois caracteres representando o mes ex: "08"
+# ano = quatro caracteres representando o ano ex: "2003"
+# email = um caracter para quardar os valores "s" e "n" = avisar por email?
+# wap = um caracter para quardar os valores "s" e "n" = avisar por wap?
+# curso = até 255 caracteres para armazenar o nome do curso a que este compromisso está relacionado
+# turma = até 255 caracteres para armazenar o nome da turma a que este compromisso está relacionado
+# avisar = inteiro, sem sinal = armazena o timestamp da data a ser avisado deste compromisso
+# avisado = um caracter para guardar "s" e "n" = já foi avisado?
 
 CREATE TABLE `compromissos` (
   `cd` int(10) unsigned NOT NULL auto_increment,
@@ -27,29 +28,23 @@ CREATE TABLE `compromissos` (
   `dia` char(2) NOT NULL default '',
   `mes` char(2) NOT NULL default '',
   `ano` varchar(4) NOT NULL default '',
+  `email` char(1) NOT NULL default '',
+  `wap` char(1) NOT NULL default '',
   `curso` varchar(255) NOT NULL default '',
   `turma` varchar(255) NOT NULL default '',
   `avisar` int(10) unsigned NOT NULL default '0',
   `avisado` char(1) NOT NULL default '',
   PRIMARY KEY  (`cd`)
-) TYPE=MyISAM AUTO_INCREMENT=5 ;
+);
 
+# Tabela Contatos:
 #
-# Extraindo dados da tabela `compromissos`
-#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código único. Facilita a localização do registro.
+# dono = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena o código da pessoa que gravou este contato.
+# nome = até 255 Caracteres, não nulo = Nome do contato
+# email = até 255 caracteres, não nulo = email do contato.
+# obs = blob (binary large object ou grande objeto binario), campos blob servem para armazenar qualquer quantidade de dados = aqui será armazenado um texto de qualquer tamanho como observação do contat0.
 
-INSERT INTO `compromissos` VALUES (1, 'Confer�ncia', 'teste', 'fdsafd asfdsafdsaf dsafdsa', 1070262000, 1070265600, '01', '12', '2003', 'teste', 'teste', 1070175600, 'n');
-INSERT INTO `compromissos` VALUES (2, 'Confer�ncia', 'fdsafdsafdsa', 'fdsafdsafdsa', 1070280000, 1070283600, '01', '12', '2003', 'teste', 'teste', 1070193600, 'n');
-INSERT INTO `compromissos` VALUES (3, 'Confer�ncia', 'fdsafdsafdsa', 'fdsafdsafdsafdsaf', 1070244000, 1070247600, '01', '12', '2003', 'teste', 'teste', 1070157600, 'n');
-INSERT INTO `compromissos` VALUES (4, 'Confer�ncia', 'fhds afhds alkjfh', 'fjdsal�kfj dsal�kjfdlks', 1071108000, 1071111600, '11', '12', '2003', 'teste', 'teste', 1071021600, 'n');
-# --------------------------------------------------------
-
-#
-# Estrutura da tabela `contatos`
-#
-# Creation: Out 26, 2003 at 10:16 PM
-# Last update: Nov 06, 2003 at 06:35 PM
-#
 
 CREATE TABLE `contatos` (
   `cd` int(10) unsigned NOT NULL auto_increment,
@@ -59,50 +54,39 @@ CREATE TABLE `contatos` (
   `obs` blob NOT NULL,
   PRIMARY KEY  (`cd`),
   KEY `dono` (`dono`)
-) TYPE=MyISAM AUTO_INCREMENT=5 ;
+);
 
+# Tabela Cursos
 #
-# Extraindo dados da tabela `contatos`
-#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código único. Facilita a localização do registro.
+# curso = até 255 Caracteres, não nulo, chave única = Nome do curso (não pode ter igual)
 
-INSERT INTO `contatos` VALUES (2, 2, 'fdsafdsafd', 'safdsaf', 0x64736166647361);
-INSERT INTO `contatos` VALUES (3, 2, 'fdsafdsafdsa', 'fdsafds', 0x61666473616664);
-INSERT INTO `contatos` VALUES (4, 1, 'gfdsafdsafdsa', 'safdsafdsa', 0x66647361666473616664);
-# --------------------------------------------------------
-
-#
-# Estrutura da tabela `cursos`
-#
-# Creation: Out 26, 2003 at 10:15 PM
-# Last update: Nov 06, 2003 at 06:35 PM
-#
 
 CREATE TABLE `cursos` (
   `cd` int(10) unsigned NOT NULL auto_increment,
   `curso` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`cd`),
-  UNIQUE KEY `curso_2` (`curso`),
-  KEY `curso` (`curso`)
-) TYPE=MyISAM AUTO_INCREMENT=7 ;
+  UNIQUE KEY `curso` (`curso`)
+);
 
-#
-# Extraindo dados da tabela `cursos`
-#
 
-INSERT INTO `cursos` VALUES (1, 'teste');
-INSERT INTO `cursos` VALUES (2, '123');
-INSERT INTO `cursos` VALUES (3, '456789');
-INSERT INTO `cursos` VALUES (4, '');
-INSERT INTO `cursos` VALUES (5, 'fdsafdsafdsa');
-INSERT INTO `cursos` VALUES (6, 'fdsaf');
-# --------------------------------------------------------
+# Tabela Eventos:
+#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código únicao para cada evento. Facilita a localização do registro.
+# tipo = até 100 caracteres, não nulo = Tipo do compromisso (Conferência, Video-Conferência, etc).
+# nome = até 255 Caracteres, não nulo = Nome do compromisso
+# descricao = até 255 caracteres, não nulo = características do compromisso.
+# inicio = inteiro, sem sinal = armazena o timestamp (numero de segundos desde 1970 para uma data precisa)
+# fim = inteiro, sem sinal = armazena o timestamp (numero de segundos desde 1970 para uma data precisa)
+# dia = dois caracteres representando o dia ex: "23"
+# mes = dois caracteres representando o mes ex: "08"
+# ano = quatro caracteres representando o ano ex: "2003"
+# email = um caracter para quardar os valores "s" e "n" = avisar por email?
+# wap = um caracter para quardar os valores "s" e "n" = avisar por wap?
+# local= até 255 caracteres para armazenar o local onde será realizado o evento
+# avisar = inteiro, sem sinal = armazena o timestamp da data a ser avisado deste compromisso
+# avisado = um caracter para guardar "s" e "n" = já foi avisado?
 
-#
-# Estrutura da tabela `eventos`
-#
-# Creation: Out 26, 2003 at 10:16 PM
-# Last update: Nov 05, 2003 at 03:57 PM
-#
 
 CREATE TABLE `eventos` (
   `cd` int(10) unsigned NOT NULL auto_increment,
@@ -114,26 +98,24 @@ CREATE TABLE `eventos` (
   `dia` char(2) NOT NULL default '',
   `mes` char(2) NOT NULL default '',
   `ano` varchar(4) NOT NULL default '',
+  `email` char(1) NOT NULL default '',
+  `wap` char(1) NOT NULL default '',
   `avisar` int(10) unsigned NOT NULL default '0',
   `local` varchar(255) NOT NULL default '',
   `avisado` char(1) NOT NULL default '',
   PRIMARY KEY  (`cd`)
-) TYPE=MyISAM AUTO_INCREMENT=3 ;
+);
 
-#
-# Extraindo dados da tabela `eventos`
-#
 
-INSERT INTO `eventos` VALUES (1, 'Palestra', 'fdsafdsafdsaf', 'fdsafdsaf dsafdsafdsa fdsaf dsaf', 1072782000, 1072785600, '30', '12', '2003', 1072695600, 'fdsa fdsaf dsaf dsaf afdsaf d', 'n');
-INSERT INTO `eventos` VALUES (2, 'Palestra', 'dfsaf dsaf dsaf dsa', ' fdsa fdasf d', 1072490400, 1072494000, '27', '12', '2003', 1072404000, 'saf dsa fdsa fd', 'n');
-# --------------------------------------------------------
+# Tabela grupos:
+#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código único. Facilita a localização do registro.
+# nome = até 255 Caracteres, não nulo, chave única = Nome do grupo
+# cd_criador = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena o código do usuário que criou o grupo.
+# curso = até 255 caracteres para armazenar o nome do curso a que este grupo está relacionado
+# turma = até 255 caracteres para armazenar o nome da turma a que este grupo está relacionado
+# professor = até 255 Caracteres, não nulo = professor do grupo
 
-#
-# Estrutura da tabela `grupos`
-#
-# Creation: Out 26, 2003 at 10:16 PM
-# Last update: Out 26, 2003 at 10:16 PM
-#
 
 CREATE TABLE `grupos` (
   `cd` int(10) unsigned NOT NULL auto_increment,
@@ -144,38 +126,29 @@ CREATE TABLE `grupos` (
   `professor` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`cd`),
   UNIQUE KEY `nome` (`nome`)
-) TYPE=MyISAM AUTO_INCREMENT=1 ;
+);
 
-#
-# Extraindo dados da tabela `grupos`
-#
 
-# --------------------------------------------------------
+# Tabela grupos:
+#
+# nome_grupo = até 255 Caracteres, não nulo = Nome do grupo
+# cd_integrante = Inteiro, sem sinal, não nulo = Armazena o código de cada integrante do grupo.
 
-#
-# Estrutura da tabela `grupos_integrantes`
-#
-# Creation: Out 26, 2003 at 10:16 PM
-# Last update: Out 26, 2003 at 10:16 PM
-#
 
 CREATE TABLE `grupos_integrantes` (
   `nome_grupo` varchar(255) NOT NULL default '0',
   `cd_integrante` int(10) unsigned NOT NULL default '0'
-) TYPE=MyISAM;
+);
 
-#
-# Extraindo dados da tabela `grupos_integrantes`
-#
 
-# --------------------------------------------------------
+# Tabela links:
+#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código único para cada link. Facilita a localização do registro.
+# dono = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena o código da pessoa que gravou este link.
+# nome = até 255 Caracteres, não nulo = Nome do link.
+# link = até 255 caracteres, não nulo = link em si.
+# descricao = blob (binary large object ou grande objeto binario), campos blob servem para armazenar qualquer quantidade de dados = aqui será armazenado um texto de qualquer tamanho como descricao do link.
 
-#
-# Estrutura da tabela `links`
-#
-# Creation: Out 26, 2003 at 10:16 PM
-# Last update: Nov 09, 2003 at 11:54 PM
-#
 
 CREATE TABLE `links` (
   `cd` int(10) unsigned NOT NULL auto_increment,
@@ -185,22 +158,28 @@ CREATE TABLE `links` (
   `link` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`cd`),
   KEY `dono` (`dono`)
-) TYPE=MyISAM AUTO_INCREMENT=7 ;
+);
 
-#
-# Extraindo dados da tabela `links`
-#
 
-INSERT INTO `links` VALUES (5, 1, 'hj jh lkjh  hlkjh lk', 0x68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c68206c6b68206b6c6a20686c6b6a20686c6b6a68206c20686c6b6a20686c6b6a20686c6b6a20686c6b6a68206c6b6a20686c6b6a68206c6b6a68206b6a6c20686c, 'hjk klkh lkjh');
-INSERT INTO `links` VALUES (6, 1, 'ssssssssssss', 0x73737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373737373, 'ssssssssssssssssss');
-# --------------------------------------------------------
-
+# Tabela tarefas:
 #
-# Estrutura da tabela `tarefas`
-#
-# Creation: Out 26, 2003 at 10:15 PM
-# Last update: Nov 05, 2003 at 04:02 PM
-#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código únicao para cada compromisso. Facilita a localização do registro.
+# tipo = até 100 caracteres, não nulo = Tipo do compromisso (Conferência, Video-Conferência, etc).
+# nome = até 255 Caracteres, não nulo = Nome do compromisso
+# descricao = até 255 caracteres, não nulo = características do compromisso.
+# prazo = inteiro, sem sinal = armazena o timestamp (numero de segundos desde 1970 para uma data precisa) = prazo de conclusão da tarefa.
+# dia = dois caracteres representando o dia ex: "23"
+# mes = dois caracteres representando o mes ex: "08"
+# ano = quatro caracteres representando o ano ex: "2003"
+# email = um caracter para quardar os valores "s" e "n" = avisar por email?
+# wap = um caracter para quardar os valores "s" e "n" = avisar por wap?
+# curso = até 255 caracteres para armazenar o nome do curso a que esta tarefa está relacionado
+# turma = até 255 caracteres para armazenar o nome da turma a que esta tarefa está relacionado
+# avisar = inteiro, sem sinal = armazena o timestamp da data a ser avisado deste compromisso
+# avisado = um caracter para guardar "s" e "n" = já foi avisado?
+# prioridade = inteiro = armazena a prioridade (1, 2 ou 3);
+# opcao = até oito caracteres para dizer a opção selecionada na hora do agendamento da tarefa: (todos, privado, em_grupo)
+# desc_opcao = até 255 caracteres para armazenar alguma informação relacionada a opção selecionada: caso seja em grupo armazena o nome do grupo, caso seja privado, armazena o codigo do usuario.
 
 CREATE TABLE `tarefas` (
   `cd` int(10) unsigned NOT NULL auto_increment,
@@ -208,6 +187,8 @@ CREATE TABLE `tarefas` (
   `nome` varchar(255) NOT NULL default '',
   `descricao` varchar(255) NOT NULL default '',
   `prazo` int(10) unsigned NOT NULL default '0',
+  `email` char(1) NOT NULL default '',
+  `wap` char(1) NOT NULL default '',
   `avisar` int(10) unsigned NOT NULL default '0',
   `prioridade` int(10) unsigned NOT NULL default '0',
   `curso` varchar(255) NOT NULL default '',
@@ -219,48 +200,37 @@ CREATE TABLE `tarefas` (
   `ano` varchar(4) NOT NULL default '',
   `avisado` char(1) NOT NULL default '',
   PRIMARY KEY  (`cd`)
-) TYPE=MyISAM AUTO_INCREMENT=4 ;
+);
 
-#
-# Extraindo dados da tabela `tarefas`
-#
 
-INSERT INTO `tarefas` VALUES (1, 'Trabalho', 'fj dsalkjf dlksaj f�dlksaj', ' jfjdklsa jfdsa �jf�lkds afjdlksa fj�lkdsa flkds aj�l', 1072339200, 1072252800, 1, 'teste', 'teste', 'todos', '', '25', '12', '2003', 'n');
-INSERT INTO `tarefas` VALUES (2, 'Trabalho', 'fj dsalkjf dlksaj f�dlksaj', ' jfjdklsa jfdsa �jf�lkds afjdlksa fj�lkdsa flkds aj�l', 1072339200, 1072252800, 1, 'teste', 'teste', 'todos', '', '25', '12', '2003', 'n');
-INSERT INTO `tarefas` VALUES (3, 'Trabalho', 'fdsa fdsaf dsa fdsa', 'f dsa fdasf dsa fdsa fdsaf dsa fd', 1071108000, 1071021600, 1, 'teste', 'teste', 'todos', '', '11', '12', '2003', 'n');
-# --------------------------------------------------------
-
+# Tabela turma_curso
 #
-# Estrutura da tabela `turma_curso`
-#
-# Creation: Out 26, 2003 at 10:15 PM
-# Last update: Nov 06, 2003 at 06:35 PM
-#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código único para cada turma. Facilita a localização do registro.
+# turma = até 255 caracteres, não nulo = nome da turma
+# curso = até 255 caracteres, não nulo = nome do curso
 
 CREATE TABLE `turma_curso` (
   `cd` int(10) unsigned NOT NULL auto_increment,
   `turma` varchar(255) NOT NULL default '',
   `curso` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`cd`)
-) TYPE=MyISAM AUTO_INCREMENT=6 ;
+);
 
+# Tabela usuarios:
 #
-# Extraindo dados da tabela `turma_curso`
-#
+# cd = Inteiro, sem sinal, não nulo, auto incrementado, chave primária = Armazena um código único para cada usuario.
+# nome = até 255 caracteres, não nulo = nome do usuario
+# endereco = até 255 caracteres, não nulo = endereco
+# tel_res, tel_com, celular = até 30 caracteres, não nulo = telefones do usuário
+# email = até 255 caracteres, não nulo = email
+# profissao = até 100 caracteres, não nulo = profissão do usuário
+# senha = até 255 caracteres, não nulo, binário = senha do usuario. Como o campo é binário as buscas são case sensitive.
+# tipo = até 10 caracteres, não nulo = tipo do usuário: professor ou aluno
+# professor = até 255 caracteres, não nulo = nome do professor se for aluno
+# turma = até 255 caracteres, não nulo = turma do usuario
+# curso = até 255 caracteres, não nulo = curso do curso
+# alterar_senha = 1 caracter = armazena "s" para sim e "n" para não
 
-INSERT INTO `turma_curso` VALUES (1, 'teste', 'teste');
-INSERT INTO `turma_curso` VALUES (2, 'fdsafdsa', '456789');
-INSERT INTO `turma_curso` VALUES (3, 'fdsafdsa', '123');
-INSERT INTO `turma_curso` VALUES (4, 'fdsafdsafds', 'fdsaf');
-INSERT INTO `turma_curso` VALUES (5, 'fdsafdsafdsaf', '456789');
-# --------------------------------------------------------
-
-#
-# Estrutura da tabela `usuarios`
-#
-# Creation: Out 26, 2003 at 10:15 PM
-# Last update: Nov 05, 2003 at 03:11 PM
-#
 
 CREATE TABLE `usuarios` (
   `cd` int(10) unsigned NOT NULL auto_increment,
@@ -275,22 +245,10 @@ CREATE TABLE `usuarios` (
   `tipo` varchar(10) NOT NULL default '',
   `turma` varchar(255) NOT NULL default '',
   `curso` varchar(255) NOT NULL default '',
-  `professor` varchar(150) NOT NULL default '',
+  `professor` varchar(255) NOT NULL default '',
   `alterar_senha` char(1) NOT NULL default '',
-  `obs` varchar(255) NOT NULL default '',
+  `obs` varchar(255) default NULL,
   PRIMARY KEY  (`cd`),
   UNIQUE KEY `email` (`email`),
   KEY `nome` (`nome`)
-) TYPE=MyISAM AUTO_INCREMENT=6 ;
-
-#
-# Extraindo dados da tabela `usuarios`
-#
-
-INSERT INTO `usuarios` VALUES (1, 'Leonardo lima de vasocncellos', 'fgdsja�lk fjds�lkafj �l', 'jj', 'j', 'kjlj', 'leo', 'fdjsalfjdslkaj', '123456', 'professor', 'teste', 'teste', '', 'n', 'jkljlkfdjslkf');
-INSERT INTO `usuarios` VALUES (2, 'teste', 'fdsafd', 'fdsafds', 'afdsaf', 'dsa', 'teste', 'fdsafdsaf', '123456', 'professor', 'teste', 'teste', '', 'n', 'dsa');
-INSERT INTO `usuarios` VALUES (3, 'blablabla', ' fdsaf dsaf dsa', 'f dsaf dsaf d', 'safdsafdsa fd', 'f dsafdsa', 'blablabla', 'rewqrewqr', 'MzQ5NDE3MTE', 'aluno', 'teste', 'teste', 'teste', 's', '');
-INSERT INTO `usuarios` VALUES (4, '123', '123', '123', '123', '123', '123', '123', 'MTQxNzc1NTE', 'aluno', 'teste', 'teste', 'teste', 's', '');
-INSERT INTO `usuarios` VALUES (5, '456', '456', '456', '456', '46', '456', '456', 'NjQ4Njg0Njk', 'professor', 'teste', 'teste', '', 's', '456');
-
-    
+);

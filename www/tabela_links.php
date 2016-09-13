@@ -8,7 +8,12 @@ $PERMISSAO_DE_ACESSO = "professor/aluno";
 require("includes/permissoes.php");
 
 require("includes/conectar_mysql.php");
-$query = "SELECT * FROM links WHERE dono=" . $_COOKIE["cd_usuario_agenda"];
+
+$query = "SELECT COUNT(cd) FROM links WHERE dono=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
+$result = mysql_query($query) or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
+$total = mysql_fetch_row($result);
+
+$query = "SELECT * FROM links WHERE dono=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
 $result = mysql_query($query) or die("Erro ao atualizar registros no Banco de dados: " . mysql_error());
 ?>
 <html>
@@ -77,12 +82,18 @@ a:active {
     <td colspan="3"><p><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><strong>Links</strong></font></p></td>
   </tr>
   <tr><td>&nbsp;</td></tr>
-  <?php while($link = mysql_fetch_array($result, MYSQL_ASSOC)){ ?>
-	  <tr><td width="20"><img src="img/seta_cal.gif" alt="Editar Link" style="cursor: hand;" onClick="parent.location='form_link.php?modo=update&cd=<?=$link["cd"]?>'"></td><td><a href="javascript: var lixo = window.open('<?=$link["link"]?>');"><?=$link["nome"]?></a></td></tr>
-	  <tr><td></td><td class="descricao"><?=$link["descricao"]?></td></tr>
-	  <tr><td></td><td class="link"><?=$link["link"]?></td></tr>
-	  <tr><td></td><td><br></td></tr>
-  <?php } ?>
+  <?php 
+  	if ($total[0] > 0) {
+		while($link = mysql_fetch_array($result, MYSQL_ASSOC)){ ?>
+		  <tr><td width="20"><img src="img/seta_cal.gif" alt="Editar Link" style="cursor: hand;" onClick="parent.location='form_link.php?modo=update&cd=<?=$link["cd"]?>'"></td><td><a href="javascript: var lixo = window.open('<?=$link["link"]?>');"><?=$link["nome"]?></a></td></tr>
+		  <tr><td></td><td class="descricao"><?=$link["descricao"]?></td></tr>
+		  <tr><td></td><td class="link"><?=$link["link"]?></td></tr>
+		  <tr><td></td><td><br></td></tr>
+  <?php } 
+  	}
+	else { ?>
+		<tr><td colspan="2" align="center" class="descricao">Nenhum Link Registrado</td></tr>
+	<? } ?>
 </table>
 </body>
 </html>

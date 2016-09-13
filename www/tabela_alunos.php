@@ -6,10 +6,10 @@
 $PERMISSAO_DE_ACESSO = "professor";		//permissões
 require("includes/permissoes.php");
 
-$modo = $_GET["modo"];
+$modo =  $HTTP_GET_VARS["modo"];
 
-$turma = urldecode($_GET["turma"]); //Tanto o curso quanto a turma são passados por parametros mas precisam passar por uma função que 
-$curso = urldecode($_GET["curso"]); //modifica alguns caracteres que não são permitidos como áéíóú e espaços em branco.
+$turma = urldecode( $HTTP_GET_VARS["turma"]); //Tanto o curso quanto a turma são passados por parametros mas precisam passar por uma função que 
+$curso = urldecode( $HTTP_GET_VARS["curso"]); //modifica alguns caracteres que não são permitidos.
 
 if (($turma != "") && ($curso != "")){ //Caso não tenha sido escolhido um curso e uma turma o script interrompe a sua execução mostrando a mensagem de erro.
 	$filtro_sql = " WHERE tipo='aluno' AND curso='" . $curso . "' AND turma='" . $turma . "'";
@@ -73,20 +73,25 @@ body {
 }
 -->
 </style>
+<script language="JavaScript">
+	function edita(cd){
+		parent.location = 'cadastro_alunos.php?modo=update&cd=' + cd;
+	}
+</script>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" class="tabela">
   <tr align="center" bgcolor="#00CCFF"> 
-    <td colspan="3"> <p><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><strong><?=$turma?> do Curso <?=$curso?></strong></font></p></td>
+    <td colspan="3"> <p><font color="#FFFFFF" size="2" face="Arial, Helvetica, sans-serif"><strong>Turma:&nbsp;<?=$turma?>&nbsp;&nbsp;&nbsp;&nbsp;Curso:&nbsp;<?=$curso?></strong></font></p></td>
   </tr>
   <tr align="center"> 
     <td class="celula"><font color="#0099FF"><strong>Nome</strong></font></td>
-    <td class="celula"><font color="#0099FF"><strong>Email</strong></font></td>
+    <td class="celula"><font color="#0099FF"><strong>E-mail</strong></font></td>
     <!--<td class="celula"><font color="#0099FF"><strong>Obs.</strong></font></td>-->
   </tr>
   <?php while($usuario = mysql_fetch_array($result, MYSQL_ASSOC)){ ?>
 	  <tr> 
-		<td class="celula"><font color="#666666"><a href="javascript: parent.location = 'cadastro_alunos.php?modo=update&cd=<?=$usuario["cd"]?>'"><?=$usuario["nome"]?></a></font></td>
+		<td class="celula"><font color="#666666"><a href="javascript: edita('<?=$usuario["cd"]?>');"><?=$usuario["nome"]?></a></font></td>
 		<td class="celula" align="center"><font color="#666666"><?=$usuario["email"]?></font></td>
 		<!--<td class="celula"><font color="#666666">Notas fdlsa jfdlska</font></td>-->
 	  </tr>

@@ -9,7 +9,7 @@
 $PERMISSAO_DE_ACESSO = "aluno/professor"; //Permissões de acesso.
 require("includes/permissoes.php");
 
-$mes = $_GET["mes"];
+$mes =  $HTTP_GET_VARS["mes"];
 $ano = date("Y");
 
 switch((int)$mes){ //Descobre o Nome por extenso do mês em português.
@@ -107,7 +107,7 @@ if((int)$mes < 10) $mes = "0" . $mes; 	//Adiciona um zero na frente dos meses de
 function constroi_tabela(){
 #Como foi dito acima a única diferença do código desta função para o da função constroi_tabela() do atividades_dia.php é que as consultas
 #são executadas passando a data de filtragem apenas o mes e o ano.
-	global $mes, $ano;
+	global $mes, $ano, $HTTP_COOKIE_VARS;
 	$linha = array();
 	$ocorrencias = 0;
 	$tabela = 	'<table width="100%" border="0" cellspacing="0" cellpadding="0">'
@@ -120,41 +120,26 @@ function constroi_tabela(){
 	
 	require("includes/conectar_mysql.php");
 	
-	if($_COOKIE["tipo_usuario_agenda"] == "professor"){
-		$query = "SELECT cd, tipo, nome, inicio FROM compromissos WHERE mes='" . $mes . "' AND ano='" . $ano . "'";
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){
-			array_push($linha, date("d/m",$atividade["inicio"]) . "--" . date("H:i",$atividade["inicio"]) . "--" . "Compromisso" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--1");
-			$ocorrencias++;
-		}
-		
-		$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE mes='" . $mes . "' AND ano='" . $ano . "'";
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){
-			array_push($linha, date("d/m",$atividade["prazo"]) . "--" . date("H:i",$atividade["prazo"]) . "--" . "Tarefa" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--2");
-			$ocorrencias++;
-		}
+	$query = "SELECT turma, curso FROM usuarios where cd=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+	$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
+	
+	$query = "SELECT cd, tipo, nome, inicio FROM compromissos WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND mes='" . $mes . "' AND ano='" . $ano . "'";
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+	while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){
+		array_push($linha, date("d/m",$atividade["inicio"]) . "--" . date("H:i",$atividade["inicio"]) . "--" . "Compromisso" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--1");
+		$ocorrencias++;
 	}
-	if($_COOKIE["tipo_usuario_agenda"] == "aluno"){
-		$query = "SELECT turma, curso FROM usuarios where cd=" . $_COOKIE["cd_usuario_agenda"];
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
+	
+	$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND mes='" . $mes . "' AND ano='" . $ano . "' AND opcao='todos'";
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+	while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){
+		array_push($linha, date("d/m",$atividade["prazo"]) . "--" . date("H:i",$atividade["prazo"]) . "--" . "Tarefa" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--2");
+		$ocorrencias++;
+	}
 		
-		$query = "SELECT cd, tipo, nome, inicio FROM compromissos WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND mes='" . $mes . "' AND ano='" . $ano . "'";
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){
-			array_push($linha, date("d/m",$atividade["inicio"]) . "--" . date("H:i",$atividade["inicio"]) . "--" . "Compromisso" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--1");
-			$ocorrencias++;
-		}
-		
-		$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND mes='" . $mes . "' AND ano='" . $ano . "' AND opcao='todos'";
-		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
-		while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){
-			array_push($linha, date("d/m",$atividade["prazo"]) . "--" . date("H:i",$atividade["prazo"]) . "--" . "Tarefa" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--2");
-			$ocorrencias++;
-		}
-		
-		$query = "SELECT nome_grupo FROM grupos_integrantes where cd_integrante=" . $_COOKIE["cd_usuario_agenda"];
+	if($HTTP_COOKIE_VARS["tipo_usuario_agenda"] == "aluno"){
+		$query = "SELECT nome_grupo FROM grupos_integrantes where cd_integrante=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
 		$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 		while($grupo = mysql_fetch_array($result, MYSQL_ASSOC)){
 			$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE turma='" . $usuario["turma"] . "' AND curso='" . $usuario["curso"] . "' AND mes='" . $mes . "' AND ano='" . $ano . "' AND desc_opcao='" . $grupo["nome_grupo"] . "'";
@@ -166,7 +151,7 @@ function constroi_tabela(){
 		}
 	}
 	
-	$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE mes='" . $mes . "' AND ano='" . $ano . "' AND opcao='privado' AND desc_opcao='" . $_COOKIE["cd_usuario_agenda"] . "'";
+	$query = "SELECT cd, tipo, nome, prazo FROM tarefas WHERE mes='" . $mes . "' AND ano='" . $ano . "' AND opcao='privado' AND desc_opcao='" . $HTTP_COOKIE_VARS["cd_usuario_agenda"] . "'";
 	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
 	while($atividade = mysql_fetch_array($result, MYSQL_ASSOC)){
 		array_push($linha, date("d/m",$atividade["prazo"]) . "--" . date("H:i",$atividade["prazo"]) . "--" . "Tarefa" . "--" . $atividade["tipo"] . "--" . $atividade["nome"] . "--" . $atividade["cd"] . "--2");

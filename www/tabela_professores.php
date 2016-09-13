@@ -1,17 +1,17 @@
 <?php
 //A tabela de professores tem praticamente o mesmo código da tabela de alunos.
-//Só que lista somente os professores e não filtra por curso ou turma.
+//Lista somente os professores e não filtra por curso ou turma.
 
 
 $PERMISSAO_DE_ACESSO = "professor";
 require("includes/permissoes.php");
 
-$modo = $_GET["modo"];
+$modo =  $HTTP_GET_VARS["modo"];
 
 if ($modo == "apagar"){
 	require("includes/conectar_mysql.php");
-	reset ($_POST); 
-	while (list($chave, $valor) = each ($_POST)) {
+	reset ($HTTP_POST_VARS); 
+	while (list($chave, $valor) = each ($HTTP_POST_VARS)) {
 		if (($chave != "allbox") && ($chave != "1") && ($valor == "on")){
 			$query = "DELETE FROM usuarios WHERE (cd='" . $chave . "') LIMIT 1";
 			$result = mysql_query($query) or die("Erro ao remover registros do Banco de dados: " . mysql_error());	
@@ -20,7 +20,7 @@ if ($modo == "apagar"){
 }
 require("includes/conectar_mysql.php");
 
-$result = mysql_query("SELECT cd, nome, email FROM usuarios WHERE tipo='professor' ORDER BY nome") or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	
+$result = mysql_query("SELECT cd, nome, email, obs FROM usuarios WHERE tipo='professor' ORDER BY nome") or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	
 ?>
 <html>
 <head>
@@ -53,6 +53,11 @@ body {
 }
 -->
 </style>
+<script language="JavaScript">
+	function edita(cd){
+		parent.location = 'cadastro_professores.php?modo=update&cd=' + cd;
+	}
+</script>
 </head>
 <body leftmargin="0" topmargin="0" marginwidth="0" marginheight="0">
 <table width="100%" border="0" cellspacing="0" cellpadding="1" class="tabela">
@@ -61,14 +66,14 @@ body {
   </tr>
   <tr align="center"> 
     <td class="celula"><font color="#0099FF"><strong>Nome</strong></font></td>
-    <td class="celula"><font color="#0099FF"><strong>Email</strong></font></td>
+    <td class="celula"><font color="#0099FF"><strong>E-mail</strong></font></td>
     <td class="celula"><font color="#0099FF"><strong>Obs.</strong></font></td>
   </tr>
   <?php while($usuario = mysql_fetch_array($result, MYSQL_ASSOC)){ ?>
 	  <tr> 
-		<td class="celula"><font color="#666666"><a href="javascript: parent.location = 'cadastro_professores.php?modo=update&cd=<?=$usuario["cd"]?>'"><?=$usuario["nome"]?></a></font></td>
+		<td class="celula"><font color="#666666"><a href="javascript: edita('<?=$usuario["cd"]?>');"><?=$usuario["nome"]?></a></font></td>
 		<td class="celula" align="center"><font color="#666666"><?=$usuario["email"]?></font></td>
-		<td class="celula"><font color="#666666">Notas fdlsa jfdlska</font></td>
+		<td class="celula"><font color="#666666"><?=$usuario["obs"]?></font></td>
 	  </tr>
   <?php } ?>
 </table>

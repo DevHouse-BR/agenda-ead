@@ -12,7 +12,7 @@ constroi_select_turmas('onChange=\\"escolhe_turma()\\"'); 	//Cada vez que o usua
 ?>
 <html>
 	<head>
-		<title>Bem Vindo &agrave; Agenda Eletr&ocirc;nica!</title>
+		<title>Bem Vindo &agrave; Agenda Virtual!</title>
 		<style type="text/css">
 			@import url("includes/estilo.css");
 			select {
@@ -33,7 +33,7 @@ constroi_select_turmas('onChange=\\"escolhe_turma()\\"'); 	//Cada vez que o usua
 				variavel = variavel.join("_");
 				if (variavel.length != 0) eval("selects.innerHTML = " + variavel + ";");
 			}
-			function escolhe_turma(){ //Passa as informações para a tabela de alunos. A novidade aqui é a utilização da função javascript escape que tem a mesma função da função em PHP urlencode();
+			function escolhe_turma(){ //Passa as informações para a tabela de alunos. A função javascript escape() tem a mesma função da função em PHP urlencode();
 				viz.location = 'tabela_alunos.php?curso=' + escape(form1.curso.value) + '&turma=' + escape(form1.turma.value);
 			}
 		</script>
@@ -63,7 +63,7 @@ constroi_select_turmas('onChange=\\"escolhe_turma()\\"'); 	//Cada vez que o usua
                           </tr>
                           <tr> 
                             <td align="left"><font size="2" face="Arial, Helvetica, sans-serif">Turma:</font></td>
-                            <td><div id="selects"></div></td>
+                            <td><div id="selects"><select style="width:100%;"></select></div></td>
                           </tr>
 						  </form>
                         </table>
@@ -75,7 +75,7 @@ constroi_select_turmas('onChange=\\"escolhe_turma()\\"'); 	//Cada vez que o usua
               </tr>
               <tr>
                 <td>&nbsp;</td>
-                <td><iframe width="100%" id="viz" frameborder="0" height="260" src="tabela_alunos.php"></iframe></td>
+                <td><iframe width="100%" id="viz" frameborder="0" height="276" src="tabela_alunos.php"></iframe></td>
                 <td>&nbsp;</td>
               </tr>
               <tr>

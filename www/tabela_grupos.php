@@ -8,14 +8,17 @@
 $PERMISSAO_DE_ACESSO = "professor/aluno";
 require("includes/permissoes.php");
 
-$modo = $_GET["modo"];
-$filtro = trim($_POST["filtro"]);
-
-$turma = urldecode($_GET["turma"]);	//Decodificação de caracteres.
-$curso = urldecode($_GET["curso"]);
+$modo =  $HTTP_GET_VARS["modo"];
 
 require("includes/conectar_mysql.php");
-$result = mysql_query("SELECT * FROM grupos" . $filtro_sql . " order by curso") or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	
+	$query = "SELECT curso, turma FROM usuarios WHERE cd=" . $HTTP_COOKIE_VARS["cd_usuario_agenda"];
+	$result = mysql_query($query) or die("Erro ao acessar registros no Banco de dados: " . mysql_error());
+	$usuario = mysql_fetch_array($result, MYSQL_ASSOC);
+require("includes/desconectar_mysql.php");
+
+
+require("includes/conectar_mysql.php");
+$result = mysql_query("SELECT * FROM grupos where curso='" . $usuario["curso"] . "' and turma='" . $usuario["turma"] . "' order by nome") or die("Erro ao acessar registros no Banco de dados: " . mysql_error());	
 ?>
 <html>
 <head>
@@ -52,10 +55,10 @@ body {
 //Caso a tabela esteja sendo executada em modo "escolhe" (chamada pelo tarefa.php) então será inserida no html uma função em javascript
 //que preenche o campo do tarefa.php com o nome do grupo escolhido.
 
-if($_GET["modo"] == "escolhe"){ ?>
+if( $HTTP_GET_VARS["modo"] == "escolhe"){ ?>
 <script language="JavaScript">
 	function seleciona(grupo){
-		opener.document.forms[0].<?=$_GET["onde"]?>.value = grupo;
+		opener.document.forms[0].<?= $HTTP_GET_VARS["onde"]?>.value = grupo;
 		self.close();
 	}
 </script>
@@ -75,7 +78,7 @@ if($_GET["modo"] == "escolhe"){ ?>
     <td class="celula"><font color="#0099FF"><strong>Nome</strong></font></td>
     <td class="celula"><font color="#0099FF"><strong>Criador</strong></font></td>
     <td class="celula"><font color="#0099FF"><strong>Elementos</strong></font></td>
-	<td class="celula"><font color="#0099FF"><strong>Email</strong></font></td>
+	<td class="celula"><font color="#0099FF"><strong>E-mail</strong></font></td>
 	<td class="celula"><font color="#0099FF"><strong>Curso</strong></font></td>
 	<td class="celula"><font color="#0099FF"><strong>Turma</strong></font></td>
 	<td class="celula"><font color="#0099FF"><strong>Professor</strong></font></td>
@@ -84,10 +87,10 @@ if($_GET["modo"] == "escolhe"){ ?>
   			//Codigo que monta a tabela de grupos. A variavel linha guarda o código em HTML de cada linha da tabela.
 			$linha  =	'<tr>';
 			$linha .=	'	<td class="celula"><font color="#666666">';
-			if($_GET["modo"] == "escolhe") $linha .= '<a href="javascript: seleciona(\'' . $grupo["nome"] . '\');">'; //Caso o script esteja rodando em modo escolhe então o nome do grupo estará dentro da tag <a> (link) que chamará a função para preencher o nome do grupo.
-			elseif($grupo["cd_criador"] == $_COOKIE["cd_usuario_agenda"]) $linha .= '<a href="javascript: edita(' . $grupo["cd"] . ');">'; //Senão o script faz outra verificação: Se o codigo do criador do grupo é igual ao código do usuario que esta visualizando a tabela neste momento. Caso seja verdadeiro o nome do grupo estará dentro da tag <a> (link) que chamará a função para editar as informações deste grupo.
+			if( $HTTP_GET_VARS["modo"] == "escolhe") $linha .= '<a href="javascript: seleciona(\'' . $grupo["nome"] . '\');">'; //Caso o script esteja rodando em modo escolhe então o nome do grupo estará dentro da tag <a> (link) que chamará a função para preencher o nome do grupo.
+			elseif($grupo["cd_criador"] == $HTTP_COOKIE_VARS["cd_usuario_agenda"]) $linha .= '<a href="javascript: edita(' . $grupo["cd"] . ');">'; //Senão o script faz outra verificação: Se o codigo do criador do grupo é igual ao código do usuario que esta visualizando a tabela neste momento. Caso seja verdadeiro o nome do grupo estará dentro da tag <a> (link) que chamará a função para editar as informações deste grupo.
 			$linha .= $grupo["nome"]; //Insere o nome do grupo na linha.
-			if(($_GET["modo"] == "escolhe") || ($grupo["cd_criador"] == $_COOKIE["cd_usuario_agenda"])) $linha .= '</a>'; //Fecha a tag <a>
+			if(( $HTTP_GET_VARS["modo"] == "escolhe") || ($grupo["cd_criador"] == $HTTP_COOKIE_VARS["cd_usuario_agenda"])) $linha .= '</a>'; //Fecha a tag <a>
 			$linha .= '</font></td>';
 			$linha .= 	'	<td class="celula" align="center"><font color="#666666">';
 			
@@ -108,8 +111,8 @@ if($_GET["modo"] == "escolhe"){ ?>
 				$nome_elementos .= $primeiro_nome[0]  . ", ";	//Só será mostrado o primeiro nome dos integrantes de cada grupo.
 				$email_elementos .= $tmparray["email"] . ", ";
 			}
-			$linha .=	'	<td class="celula"><font color="#666666">&nbsp;'. chop($nome_elementos, ", ") . '</font></td>'; //As funções chop() e rtrim() são sinonimas elas removem espaço em branco no final de uma string. Neste caso vai remover a última virgua inserida também.
-			$linha .=	'	<td class="celula"><font color="#666666">&nbsp;' . rtrim($email_elementos, ", ") . '</font></td>';
+			$linha .=	'	<td class="celula"><font color="#666666">&nbsp;' . preg_replace("[\,\s$]", "", $nome_elementos) . '</font></td>'; //As funções chop() e rtrim() são sinonimas elas removem espaço em branco no final de uma string. Neste caso vai remover a última virgua inserida também.
+			$linha .=	'	<td class="celula"><font color="#666666">&nbsp;' . preg_replace("[\,\s$]", "", $email_elementos) . '</font></td>';
 			
 			$linha .=	'	<td class="celula"><font color="#666666">' . $grupo["curso"] . '</font></td>';
 			$linha .=	'	<td class="celula"><font color="#666666">' . $grupo["turma"] . '</font></td>';

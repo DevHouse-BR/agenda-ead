@@ -2,7 +2,7 @@
 Estas funçoes e códigos são para o funcionamento do menu horizontal.
 */
 
-var saiu = 0;	//Variável que diz se o mouse está em cima do menu ou já saiu.
+var saiu = 0;	//Variável que indica se o mouse está em cima do menu ou já saiu.
 var intervalo;	//Intervalo retornado pela função setInterval() serve para depois usar a função clearInterval();
 
 function start(){ //Quando o mouse passar em cima do menu que apareceu então será executada esta função.
@@ -30,6 +30,20 @@ function escondeselect(){ //Codigo que procura dentro de um formulário a existên
 		}
 	}
 }
+
+function mostramenu_agenda(){ //Insere dentro do <div> menuagenda a tabela abaixo:
+	escondemenu();
+	escondeselect();
+	var html = 		"<table width=\"110\" cellpadding=\"3\" cellspacing=\"0\" class=\"menu2\">"
+				+	"<tr><td style=\"cursor: hand; border-bottom: solid 1px #3399FF;\" onMouseOver=\"style.fontWeight = 'bold';\" onMouseOut=\"style.fontWeight = 'normal';\" onClick=\"go(18);\" align=\"center\" bgcolor=\"#3366FF\"><font color=\"#FFFFFF\" size=\"2\" face=\"Arial, Helvetica, sans-serif\">Visualizar</font></td></tr>"
+				+	"<tr><td style=\"cursor: hand; border-bottom: solid 1px #3399FF;\" onMouseOver=\"style.fontWeight = 'bold';\" onMouseOut=\"style.fontWeight = 'normal';\" onClick=\"go(20);\" align=\"center\" bgcolor=\"#3366FF\"><font color=\"#FFFFFF\" size=\"2\" face=\"Arial, Helvetica, sans-serif\">Fechar</font></td></tr>"
+				+	"</table>";
+	document.all["menuagenda"].innerHTML = html;
+	document.all["menuagenda"].style.position = "absolute";
+	document.all["menuagenda"].style.visibility = "visible";
+	document.all["menuagenda"].style.width = "100%";
+}
+
 
 function mostramenu_cursos(){ //Insere dentro do <div> menucursos a tabela abaixo:
 	escondemenu();
@@ -110,6 +124,8 @@ function mostramenu_links(){ //Insere dentro do <div> menulinks a tabela abaixo:
 	document.all["menulinks"].style.width = "100%";
 }
 function escondemenu(){ //Faz qualquer menu que está sendo mostrado seja escondido.
+	document.all["menuagenda"].innerHTML = "";
+	document.all["menuagenda"].style.visibility = "hidden";
 	document.all["menucursos"].innerHTML = "";
 	document.all["menucursos"].style.visibility = "hidden";
 	document.all["menugrupos"].innerHTML = "";
@@ -191,6 +207,9 @@ function go(opcao){ //redireciona o browser para as páginas selecionadas.
 			break;
 		case 19:
 			self.location = "duvidas.php";
+			break;
+		case 20:
+			if (confirm("Deseja Sair do Programa?")) location = "logout.php";
 			break;
 	}
 }
